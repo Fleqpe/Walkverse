@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:projetest1/anasayfa.dart';
+import 'package:projetest1/chart.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(
+    providers: [ChangeNotifierProvider(create: (_) => ChartDataProvider())],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
