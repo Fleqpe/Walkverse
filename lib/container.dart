@@ -54,3 +54,19 @@ Text createText(String content, double? fontsize) {
     style: TextStyle(color: textColor, fontFamily: font2, fontSize: fontsize),
   );
 }
+
+Future<void> navigateTo(
+    BuildContext context, Widget page, bool canGoBack) async {
+  if (canGoBack) {
+    await Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => page),
+    );
+  } else {
+    await Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => page),
+      (Route<dynamic> route) => false,
+    );
+  }
+}
