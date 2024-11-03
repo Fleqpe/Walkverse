@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:walkverse/anasayfa.dart';
 import 'package:walkverse/container.dart';
-import 'package:walkverse/forgotpassword.dart';
+import 'package:walkverse/forgot_password.dart';
 import 'package:walkverse/register.dart';
 import 'package:walkverse/renkler.dart';
 

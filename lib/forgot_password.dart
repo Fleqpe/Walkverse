@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:walkverse/anasayfa.dart';
+import 'package:walkverse/container.dart';
 import 'package:walkverse/renkler.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -60,14 +62,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  await navigateTo(context, const Anasayfa(), false);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accent3Color,
                   minimumSize: const Size(200, 50),
                 ),
                 child: Text(
                   "Şifre Sıfırlama E-postası Gönder",
-                  style: TextStyle(fontSize: 16, fontFamily: font2),
+                  style: TextStyle(
+                      fontSize: 16, fontFamily: font2, color: textColor),
                 ),
               ),
             ],

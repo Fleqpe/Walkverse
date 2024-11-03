@@ -58,7 +58,7 @@ Text createText(String content, double? fontsize) {
 Future<void> navigateTo(
     BuildContext context, Widget page, bool canGoBack) async {
   if (canGoBack) {
-    await Navigator.pushReplacement(
+    await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => page),
     );
