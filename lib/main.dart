@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:projetest1/anasayfa.dart';
-import 'package:projetest1/chart.dart';
+import 'package:walkverse/anasayfa.dart';
+import 'package:walkverse/chart.dart';
 import 'package:provider/provider.dart';
 
 void main() {

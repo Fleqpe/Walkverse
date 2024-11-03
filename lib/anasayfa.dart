@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:projetest1/chart.dart';
-import 'package:projetest1/container.dart';
-import 'package:projetest1/renkler.dart';
+import 'package:walkverse/chart.dart';
+import 'package:walkverse/container.dart';
+import 'package:walkverse/renkler.dart';
 
 class Anasayfa extends StatefulWidget {
   const Anasayfa({super.key});

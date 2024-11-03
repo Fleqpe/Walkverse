@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:projetest1/renkler.dart';
+import 'package:walkverse/renkler.dart';
 
 Image characterImage = Image.asset(
   "Images/Character.png",

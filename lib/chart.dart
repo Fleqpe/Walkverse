@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:projetest1/container.dart';
-import 'package:projetest1/renkler.dart';
+import 'package:walkverse/container.dart';
+import 'package:walkverse/renkler.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
