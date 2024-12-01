@@ -1,15 +1,11 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:walkverse/anasayfa.dart';
 import 'package:walkverse/chart.dart';
 import 'package:provider/provider.dart';
 import 'package:walkverse/login.dart';
-import 'package:walkverse/PedometerService.dart';
+import 'package:walkverse/register.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized
-  await Firebase.initializeApp();
-  await PedometerService().initializeService(); // Initialize the singleton service
-
+void main() {
   runApp(MultiProvider(
     providers: [ChangeNotifierProvider(create: (_) => ChartDataProvider())],
     child: const MyApp(),
