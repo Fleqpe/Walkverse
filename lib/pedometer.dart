@@ -7,6 +7,8 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -36,11 +38,11 @@ class _MyAppState extends State<MyApp> {
                 builder: (context, snapshot) {
                   return Text(
                     'Steps Taken: ${snapshot.data ?? '?'}',
-                    style: TextStyle(fontSize: 30),
+                    style: const TextStyle(fontSize: 30),
                   );
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               StreamBuilder<String>(
                 stream: _pedometerService.statusStream,
                 builder: (context, snapshot) {
@@ -49,7 +51,7 @@ class _MyAppState extends State<MyApp> {
                     children: [
                       Text(
                         'Pedestrian Status: $status',
-                        style: TextStyle(fontSize: 30),
+                        style: const TextStyle(fontSize: 30),
                       ),
                       Icon(
                         status == 'walking'

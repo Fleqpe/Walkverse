@@ -4,12 +4,10 @@ import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PedometerService {
-  // Singleton Pattern
   static final PedometerService _instance = PedometerService._internal();
   factory PedometerService() => _instance;
   PedometerService._internal();
 
-  // Stream Controllers
   final StreamController<String> _statusController = StreamController.broadcast();
   final StreamController<String> _stepsController = StreamController.broadcast();
 
