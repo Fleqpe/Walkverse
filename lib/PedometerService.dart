@@ -24,7 +24,7 @@ class PedometerService {
   String _steps = '?';
 
   String get currentStatus => _status;
-  String get currentSteps => _steps;
+  String get currentSteps => _steps;    // Adım sayısını db'ye kaydetmek için kullanılabilir.
 
   // Permission Check
   Future<bool> _checkActivityRecognitionPermission() async {
