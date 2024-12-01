@@ -19,14 +19,12 @@ class PedometerService {
   late Stream<StepCount> _stepCountStream;
   late Stream<PedestrianStatus> _pedestrianStatusStream;
 
-  // Latest values
   String _status = '?';
   String _steps = '?';
 
   String get currentStatus => _status;
   String get currentSteps => _steps;    // Adım sayısını db'ye kaydetmek için kullanılabilir.
 
-  // Permission Check
   Future<bool> _checkActivityRecognitionPermission() async {
     bool granted = await Permission.activityRecognition.isGranted;
 
@@ -37,7 +35,6 @@ class PedometerService {
     return granted;
   }
 
-  // Initialize Pedestrian and Step Streams
   Future<void> initialize() async {
     bool granted = await _checkActivityRecognitionPermission();
     if (!granted) {
@@ -73,7 +70,6 @@ class PedometerService {
     _stepsController.add(_steps);
   }
 
-  // Dispose Streams
   void dispose() {
     _statusController.close();
     _stepsController.close();
