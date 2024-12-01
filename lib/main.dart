@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:walkverse/anasayfa.dart';
 import 'package:walkverse/chart.dart';
 import 'package:provider/provider.dart';
+import 'package:walkverse/login.dart';
 import 'package:walkverse/register.dart';
 
 void main() {
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const RegisterPage(),
+      home: const LoginPage(),
     );
   }
 }
