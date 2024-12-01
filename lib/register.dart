@@ -4,27 +4,35 @@ import 'package:walkverse/container.dart';
 import 'package:walkverse/login.dart';
 import 'package:walkverse/renkler.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
-  @override
-  State<RegisterPage> createState() => _RegisterPageState();
-}
 
-class _RegisterPageState extends State<RegisterPage> {
-  final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  Widget buildTextField({
+    required TextEditingController controller,
+    required String label,
+    bool isPassword = false,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: isPassword,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: accentColor,
+        labelText: label,
+        labelStyle: TextStyle(fontFamily: font2),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final usernameController = TextEditingController();
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+
     return Scaffold(
       backgroundColor: mainColor,
       body: Center(
@@ -35,49 +43,19 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               createText("Kayıt Ol", 40),
               const SizedBox(height: 10),
-              TextField(
-                controller: _usernameController,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: accentColor,
-                  labelText: 'Kullanıcı Adı',
-                  labelStyle: TextStyle(fontFamily: font2),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-              ),
+              buildTextField(
+                  controller: usernameController, label: 'Kullanıcı Adı'),
               const SizedBox(height: 10),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: accentColor,
-                  labelText: 'E-posta',
-                  labelStyle: TextStyle(fontFamily: font2),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-              ),
+              buildTextField(controller: emailController, label: 'E-posta'),
               const SizedBox(height: 10),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: accentColor,
-                  labelText: 'Şifre',
-                  labelStyle: TextStyle(fontFamily: font2),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-              ),
+              buildTextField(
+                  controller: passwordController,
+                  label: 'Şifre',
+                  isPassword: true),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () async {
-                  await navigateTo(context, const Anasayfa(), false);
+                onPressed: () {
+                  navigateTo(context, const Anasayfa(), false);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accent3Color,
@@ -87,9 +65,8 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 10),
               TextButton(
-                onPressed: () async {
-                  await navigateTo(context, const LoginPage(),
-                      false); // Add navigation to login page
+                onPressed: () {
+                  navigateTo(context, const LoginPage(), false);
                 },
                 child: Text(
                   'Zaten bir hesabınız var mı?',

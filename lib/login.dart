@@ -5,24 +5,34 @@ import 'package:walkverse/forgot_password.dart';
 import 'package:walkverse/register.dart';
 import 'package:walkverse/renkler.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
 
-class _LoginPageState extends State<LoginPage> {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  Widget buildTextField({
+    required TextEditingController controller,
+    required String label,
+    bool isPassword = false,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: isPassword,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: accentColor,
+        labelText: label,
+        labelStyle: TextStyle(fontFamily: font2),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final usernameController = TextEditingController();
+    final passwordController = TextEditingController();
+
     return Scaffold(
       backgroundColor: mainColor,
       body: Center(
@@ -33,66 +43,52 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               createText("Giriş Yap", 40),
               const SizedBox(height: 40),
-              TextField(
-                controller: _usernameController,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: accentColor,
-                  labelText: 'Kullanıcı Adı',
-                  labelStyle: TextStyle(fontFamily: font2),
-                  border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(8.0), // Köşeleri yuvarlama
-                  ),
-                ),
-              ),
+              buildTextField(
+                  controller: usernameController, label: 'Kullanıcı Adı'),
               const SizedBox(height: 20),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                    filled: true,
-                    fillColor: accentColor,
-                    labelText: 'Sifre',
-                    labelStyle: TextStyle(fontFamily: font2),
-                    border: const OutlineInputBorder()),
-              ),
+              buildTextField(
+                  controller: passwordController,
+                  label: 'Şifre',
+                  isPassword: true),
               const SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ElevatedButton(
-                    onPressed: () async {
-                      await navigateTo(context, const Anasayfa(), false);
+                    onPressed: () {
+                      navigateTo(context, const Anasayfa(), false);
                     },
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: accentColor,
-                        minimumSize: const Size(150, 50)),
+                      backgroundColor: accentColor,
+                      minimumSize: const Size(150, 50),
+                    ),
                     child: createText("Giriş Yap", 18),
                   ),
                   ElevatedButton(
-                    onPressed: () async {
-                      await navigateTo(context, const RegisterPage(), true);
+                    onPressed: () {
+                      navigateTo(context, const RegisterPage(), true);
                     },
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: accent3Color,
-                        minimumSize: const Size(150, 50)),
+                      backgroundColor: accent3Color,
+                      minimumSize: const Size(150, 50),
+                    ),
                     child: createText("Kayıt Ol", 18),
-                  )
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
               TextButton(
-                onPressed: () async {
-                  await navigateTo(context, const ForgotPasswordPage(), true);
+                onPressed: () {
+                  navigateTo(context, const ForgotPasswordPage(), true);
                 },
                 child: Text(
-                  'Sifremi Unuttum',
+                  'Şifremi Unuttum',
                   style: TextStyle(
-                      color: textColor,
-                      fontSize: 20,
-                      fontFamily: font2,
-                      decoration: TextDecoration.underline),
+                    color: textColor,
+                    fontSize: 20,
+                    fontFamily: font2,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
             ],
