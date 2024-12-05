@@ -27,11 +27,7 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
   final TextEditingController _userIdController = TextEditingController();
   final TextEditingController _stepAmountController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
   List<Map<String, dynamic>> _userSteps = [];
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -67,26 +63,8 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
                   onPressed: _getUserSteps,
                   child: Text('Get Steps'),
                 ),
-                
               ],
             ),
-
-            
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: "E-posta"),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: "Şifre"),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _register,
-              child: Text("Kayıt Ol"),
-            ),
-          
             Expanded(
               child: ListView.builder(
                 itemCount: _userSteps.length,
@@ -120,27 +98,5 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
     setState(() {
       _userSteps = steps;
     });
-  }
-  Future<void> _register() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-
-    if (email.isNotEmpty && password.isNotEmpty) {
-      final user = await _userStepsService.registerUser(email: email, password: password);
-
-      if (user != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Kayıt Başarılı: ${user.email}")),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Kayıt Başarısız")),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Lütfen tüm alanları doldurun")),
-      );
-    }
   }
 }
