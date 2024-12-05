@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1088382013727",
+    "project_id": "walkverse-4683e",
+    "storage_bucket": "walkverse-4683e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088382013727:android:cf5375372b791c00c6e02a",
+        "android_client_info": {
+          "package_name": "com.example.projetest1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuwoYXfi2rqWUZkBVvSDRjZGdDCtSexXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
