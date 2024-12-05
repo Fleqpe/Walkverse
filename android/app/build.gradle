@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -46,14 +47,4 @@ flutter {
 dependencies
 {
     implementation platform('com.google.firebase:firebase-bom:33.6.0')
-}
-
-// Apply the Google services plugin at the bottom
-apply plugin: 'com.google.gms.google-services'
-
-// Ensure processDebugGoogleServices runs before mapDebugSourceSetPaths
-tasks.whenTaskAdded { task ->
-    if (task.name == 'mapDebugSourceSetPaths') {
-        task.dependsOn 'processDebugGoogleServices'
-    }
 }
