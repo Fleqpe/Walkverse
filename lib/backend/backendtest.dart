@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserStepsService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final CollectionReference _userStepsCollection = FirebaseFirestore.instance.collection('UserSteps');
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> addUserStep(String userId, int stepAmount, DateTime date) async {
     try {
@@ -42,6 +44,21 @@ class UserStepsService {
       });
     } catch (e) {
       print('Error updating user step: $e');
+    }
+  }
+  
+
+  Future<User?> registerUser({required String email, required String password}) async {
+    try {
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password.trim(),
+      );
+      print("Kullanıcı Oluşturuldu: ${userCredential.user?.email}");
+      return userCredential.user; 
+    } catch (e) {
+      print("Hata: $e");
+      return null;
     }
   }
 }
