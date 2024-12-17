@@ -16,7 +16,7 @@ class Landing extends StatefulWidget {
 
 class _LandingState extends State<Landing> {
   var currentWidgetText = "ANASAYFA";
-  Widget currentWidget = const Anasayfa();
+  Widget currentWidget = Anasayfa();
   int _selectedIndex = 0; // Variable to track selected index
   void _onItemTapped(int index) {
     setState(() {
@@ -26,15 +26,15 @@ class _LandingState extends State<Landing> {
     // Add the actions you want to trigger based on the selected index
     switch (index) {
       case 0:
-        currentWidget = const Anasayfa();
+        currentWidget = Anasayfa();
         currentWidgetText = "ANASAYFA";
         break;
       case 1:
-        currentWidget = const Map();
+        currentWidget = Map();
         currentWidgetText = "HARİTA";
         break;
       case 2:
-        currentWidget = const Steps();
+        currentWidget = Steps();
         currentWidgetText = "ADIMLAR";
         break;
       case 3:
@@ -42,7 +42,7 @@ class _LandingState extends State<Landing> {
         currentWidgetText = "LİDER TABLOSU";
         break;
       case 4:
-        currentWidget = const ProfilePage();
+        currentWidget = ProfilePage();
         currentWidgetText = "PROFİL";
         break;
     }

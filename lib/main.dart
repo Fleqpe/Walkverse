@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:walkverse/anasayfa.dart';
 import 'package:walkverse/chart.dart';
 import 'package:provider/provider.dart';
 import 'package:walkverse/login.dart';
-import 'package:walkverse/register.dart';
 
 void main() {
   runApp(MultiProvider(

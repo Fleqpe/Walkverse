@@ -5,7 +5,7 @@ import 'package:walkverse/renkler.dart';
 
 class Anasayfa extends StatelessWidget
 {
-  const Anasayfa({super.key});
+  const Anasayfa({Key? key});
 
   @override
   Widget build(BuildContext context) {
