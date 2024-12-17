@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:walkverse/anasayfa.dart';
+import 'package:walkverse/landing.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/login.dart';
 import 'package:walkverse/renkler.dart';
@@ -55,7 +55,7 @@ class RegisterPage extends StatelessWidget {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                  navigateTo(context, const Anasayfa(), false);
+                  navigateTo(context, const Landing(), false);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accent3Color,
