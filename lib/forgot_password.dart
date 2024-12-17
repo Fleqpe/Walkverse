@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:walkverse/anasayfa.dart';
+import 'package:walkverse/landing.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/renkler.dart';
 
@@ -63,7 +63,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () async {
-                  await navigateTo(context, const Anasayfa(), false);
+                  await navigateTo(context, const Landing(), false);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accent3Color,

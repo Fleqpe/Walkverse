@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:walkverse/anasayfa.dart';
+import 'package:walkverse/landing.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/forgot_password.dart';
 import 'package:walkverse/register.dart';
@@ -56,7 +56,7 @@ class LoginPage extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      navigateTo(context, const Anasayfa(), false);
+                      navigateTo(context, const Landing(), false);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: accentColor,

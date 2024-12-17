@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:walkverse/anasayfa.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/renkler.dart';
 
@@ -10,19 +9,6 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: mainColor,
-      bottomNavigationBar: bottomNavigationBar(),
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back), // Geri butonunun ikonu
-          onPressed: () {
-            // Geri butonuna tıklanınca yapılacak işlemi buraya yazın
-            Navigator.pop(context); // Sayfayı geri almak için kullanılır
-          },
-        ),
-        backgroundColor: accentColor,
-        title: createText("Hesabım", 26),
-        centerTitle: true,
-      ),
       body: Padding(
         padding: const EdgeInsets.only(left: 10, right: 10, top: 5),
         child: Column(
@@ -46,7 +32,10 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20), // Araya boşluk ekliyoruz
+            const ProfileOption(title: "Konum"),
             const ProfileOption(title: "Avatarını Değiştir"),
+            const ProfileOption(title: "Avatar Kombinleri"),
+            const ProfileOption(title: "Arkadaşlarını Davet Et"),
             const ProfileOption(title: "Arkadaşlarım"),
           ],
         ),
