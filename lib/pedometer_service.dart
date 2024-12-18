@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class PedometerService {
-  static final PedometerService _instance = PedometerService._internal();
-  factory PedometerService() => _instance;
-  PedometerService._internal();
+class pedometer_service {
+  static final pedometer_service _instance = pedometer_service._internal();
+  factory pedometer_service() => _instance;
+  pedometer_service._internal();
 
   final StreamController<String> _statusController =
       StreamController.broadcast();
