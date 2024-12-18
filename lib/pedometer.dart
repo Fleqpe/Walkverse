@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'PedometerService.dart';
+import 'pedometer_service.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final PedometerService _pedometerService = PedometerService();
+  final pedometer_service _pedometerService = pedometer_service();
 
   @override
   void initState() {
