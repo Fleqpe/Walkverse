@@ -2,6 +2,7 @@ import 'backendtest.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -24,13 +25,16 @@ class UserStepsScreen extends StatefulWidget {
 
 class _UserStepsScreenState extends State<UserStepsScreen> {
   final UserStepsService _userStepsService = UserStepsService();
+  final AuthService _authService = AuthService();
+  
   final TextEditingController _userIdController = TextEditingController();
   final TextEditingController _stepAmountController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  
   List<Map<String, dynamic>> _userSteps = [];
-
+  String errorMessage = "";
 
 
   @override
@@ -70,7 +74,7 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
                 
               ],
             ),
-
+            SizedBox(height: 20),
             
             TextField(
               controller: _emailController,
@@ -82,11 +86,32 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
               obscureText: true,
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _register,
-              child: Text("Kayıt Ol"),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [ 
+                ElevatedButton(
+                  onPressed: _register,
+                  child: Text("sing up"),
+                ),
+                ElevatedButton(
+                  onPressed: _login,
+                  child: Text("Login"),
+                ),
+              ],
             ),
-          
+            TextButton(
+              onPressed: () {
+                //Navigator.pushNamed(context, '/signup'); // Kayıt ol sayfasına yönlendirme
+              },
+              child: Text("Don't have an account? Sign up."),
+            ),
+            if (errorMessage.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Text(
+                  errorMessage,
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
             Expanded(
               child: ListView.builder(
                 itemCount: _userSteps.length,
@@ -121,12 +146,13 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
       _userSteps = steps;
     });
   }
+
   Future<void> _register() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
     if (email.isNotEmpty && password.isNotEmpty) {
-      final user = await _userStepsService.registerUser(email: email, password: password);
+      final user = await _authService.registerUser(email: email, password: password);
 
       if (user != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -141,6 +167,41 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Lütfen tüm alanları doldurun")),
       );
+    }
+  }
+
+  void _login() async {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Email and password cannot be empty.")),
+      );
+    
+      });
+      return;
+    }
+
+    String result = await _authService.loginUser(email, password);
+    setState(() {
+      errorMessage = result;
+      
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),);
+      
+    });
+
+    if (result == "success") {
+      setState(() {
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Giriş başarılı. Ana sayfaya yönlendirme yapılabilir.")),
+      );
+    
+      });
+      // Giriş başarılı. Ana sayfaya yönlendirme yapılabilir.
+      //Navigator.pushReplacementNamed(context, '/home');
     }
   }
 }
