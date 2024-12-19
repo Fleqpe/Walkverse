@@ -49,6 +49,9 @@ class UserStepsService {
   
 }
 
+class UserSession {
+    static String? userId; // Kullanıcı ID'sini saklamak için
+}
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -68,6 +71,7 @@ class AuthService {
     }
   }
 
+  
   Future<String> loginUser(String email, String password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -75,6 +79,8 @@ class AuthService {
         password: password,
       );
       if (userCredential.user != null) {
+        UserSession.userId = userCredential.user!.uid;
+        print(UserSession.userId);
         return "success"; // Giriş başarılı
       }
     } on FirebaseAuthException catch (e) {
