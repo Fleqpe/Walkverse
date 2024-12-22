@@ -12,28 +12,7 @@ class Anasayfa extends StatefulWidget {
 }
 
 class _AnasayfaState extends State<Anasayfa> {
-  int _selectedIndex = 0; // Variable to track selected index
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index; // Update the selected index
-    });
-
-    // Add the actions you want to trigger based on the selected index
-    switch (index) {
-      case 0:
-        // Perform actions for Home tab
-        break;
-      case 1:
-        // Perform actions for Location tab
-        break;
-      case 2:
-        // Perform actions for Steps tab
-        break;
-      case 3:
-        navigateTo(context, const ProfilePage(), true);
-        break;
-    }
-  }
+  // Variable to track selected index
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
@@ -41,19 +20,7 @@ class _AnasayfaState extends State<Anasayfa> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: mainColor,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: accentColor,
-        selectedFontSize: 0,
-        items: [
-          createBottomNavigationBarItem("Images/Location.png"),
-          createBottomNavigationBarItem("Images/Steps.png"),
-          createBottomNavigationBarItem("Images/Leaderboard.png"),
-          createBottomNavigationBarItem("Images/Character.png")
-        ],
-      ),
+      bottomNavigationBar: bottomNavigationBar(),
       appBar: AppBar(
         actions: [
           createIconButton("Images/Settings.png",
@@ -90,6 +57,41 @@ class _AnasayfaState extends State<Anasayfa> {
       ),
     );
   }
+}
+
+void _onItemTapped(int index) {
+  // Add the actions you want to trigger based on the selected index
+  switch (index) {
+    case 0:
+      // Perform actions for Home tab
+      break;
+    case 1:
+      // Perform actions for Location tab
+      break;
+    case 2:
+      // Perform actions for Steps tab
+      break;
+    case 3:
+      navigateTo(context, const ProfilePage(), true);
+      break;
+  }
+}
+
+int _selectedIndex = 0;
+Widget bottomNavigationBar() {
+  return BottomNavigationBar(
+    currentIndex: _selectedIndex,
+    onTap: _onItemTapped,
+    type: BottomNavigationBarType.fixed,
+    backgroundColor: accentColor,
+    selectedFontSize: 0,
+    items: [
+      createBottomNavigationBarItem("Images/Location.png"),
+      createBottomNavigationBarItem("Images/Steps.png"),
+      createBottomNavigationBarItem("Images/Leaderboard.png"),
+      createBottomNavigationBarItem("Images/Character.png")
+    ],
+  );
 }
 
 Widget mainPageWidget() {
