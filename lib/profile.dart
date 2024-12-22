@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:walkverse/anasayfa.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/renkler.dart';
 
@@ -9,6 +10,7 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: mainColor,
+      bottomNavigationBar: bottomNavigationBar(),
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back), // Geri butonunun ikonu
@@ -44,10 +46,7 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20), // Araya boşluk ekliyoruz
-            const ProfileOption(title: "Konum"),
             const ProfileOption(title: "Avatarını Değiştir"),
-            const ProfileOption(title: "Avatar Kombinleri"),
-            const ProfileOption(title: "Arkadaşlarını Davet Et"),
             const ProfileOption(title: "Arkadaşlarım"),
           ],
         ),

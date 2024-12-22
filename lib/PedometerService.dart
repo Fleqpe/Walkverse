@@ -8,8 +8,10 @@ class PedometerService {
   factory PedometerService() => _instance;
   PedometerService._internal();
 
-  final StreamController<String> _statusController = StreamController.broadcast();
-  final StreamController<String> _stepsController = StreamController.broadcast();
+  final StreamController<String> _statusController =
+      StreamController.broadcast();
+  final StreamController<String> _stepsController =
+      StreamController.broadcast();
 
   Stream<String> get statusStream => _statusController.stream;
   Stream<String> get stepsStream => _stepsController.stream;
@@ -21,13 +23,15 @@ class PedometerService {
   String _steps = '?';
 
   String get currentStatus => _status;
-  String get currentSteps => _steps;    // Adım sayısını db'ye kaydetmek için kullanılabilir.
+  String get currentSteps =>
+      _steps; // Adım sayısını db'ye kaydetmek için kullanılabilir.
 
   Future<bool> _checkActivityRecognitionPermission() async {
     bool granted = await Permission.activityRecognition.isGranted;
 
     if (!granted) {
-      granted = await Permission.activityRecognition.request() == PermissionStatus.granted;
+      granted = await Permission.activityRecognition.request() ==
+          PermissionStatus.granted;
     }
 
     return granted;
@@ -42,7 +46,9 @@ class PedometerService {
     }
 
     _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
-    _pedestrianStatusStream.listen(_onPedestrianStatusChanged).onError(_onPedestrianStatusError);
+    _pedestrianStatusStream
+        .listen(_onPedestrianStatusChanged)
+        .onError(_onPedestrianStatusError);
 
     _stepCountStream = Pedometer.stepCountStream;
     _stepCountStream.listen(_onStepCount).onError(_onStepCountError);

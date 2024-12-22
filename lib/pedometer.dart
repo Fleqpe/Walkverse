@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'PedometerService.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
