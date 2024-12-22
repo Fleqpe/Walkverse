@@ -8,7 +8,8 @@ import 'package:walkverse/PedometerService.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized
   await Firebase.initializeApp();
-  await PedometerService().initializeService(); // Initialize the singleton service
+  await PedometerService()
+      .initializeService(); // Initialize the singleton service
 
   runApp(MultiProvider(
     providers: [ChangeNotifierProvider(create: (_) => ChartDataProvider())],

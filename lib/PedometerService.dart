@@ -33,9 +33,9 @@ class PedometerService {
   Future<void> sendStepsToDatabase(int steps) async {
     try {
       await _userStepsService.addUserStep("userId", steps, DateTime.now());
-      print("Steps sent to database: $steps");
+    //  print("Steps sent to database: $steps");
     } catch (e) {
-      print("Error sending steps to database: $e");
+//      print("Error sending steps to database: $e");
     }
   }
 
@@ -48,7 +48,7 @@ class PedometerService {
     Pedometer.stepCountStream.listen((event) {
       _instance.stepCount = event.steps;
       service.invoke("update", {"steps": _instance.stepCount});
-      print("Adım Sayısı: ${_instance.stepCount}"); // Konsola yazdır
+   //   print("Adım Sayısı: ${_instance.stepCount}"); // Konsola yazdır
     });
 
     Timer.periodic(const Duration(minutes: 1), (timer) {
