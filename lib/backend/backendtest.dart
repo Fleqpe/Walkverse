@@ -2,9 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserStepsService {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final CollectionReference _userStepsCollection = FirebaseFirestore.instance.collection('UserSteps');
-  
 
   Future<void> addUserStep(String userId, int stepAmount, DateTime date) async {
     try {
@@ -46,7 +45,32 @@ class UserStepsService {
       print('Error updating user step: $e');
     }
   }
-  
+
+  Future<User?> loginUser(String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } catch (e) {
+      print('Error logging in: $e');
+      return null;
+    }
+  }
+
+  Future<User?> registerUser(String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } catch (e) {
+      print('Error registering user: $e');
+      return null;
+    }
+  }
 }
 
 class UserSession {
