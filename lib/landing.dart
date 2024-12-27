@@ -3,7 +3,6 @@ import 'package:walkverse/anasayfa.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/profile.dart';
 import 'package:walkverse/renkler.dart';
-import 'package:walkverse/map.dart';
 import 'package:walkverse/leaderboard.dart';
 import 'package:walkverse/steps.dart';
 
@@ -30,18 +29,14 @@ class _LandingState extends State<Landing> {
         currentWidgetText = "ANASAYFA";
         break;
       case 1:
-        currentWidget = const Map();
-        currentWidgetText = "HARİTA";
-        break;
-      case 2:
-        currentWidget = const Steps();
+        currentWidget = const StepDetailsWidget();
         currentWidgetText = "ADIMLAR";
         break;
-      case 3:
+      case 2:
         currentWidget = const Leaderboard();
         currentWidgetText = "LİDER TABLOSU";
         break;
-      case 4:
+      case 3:
         currentWidget = const ProfilePage();
         currentWidgetText = "PROFİL";
         break;
@@ -62,7 +57,6 @@ class _LandingState extends State<Landing> {
         selectedFontSize: 0,
         items: [
           createBottomNavigationBarItem("Images/Home.png"),
-          createBottomNavigationBarItem("Images/Location.png"),
           createBottomNavigationBarItem("Images/Steps.png"),
           createBottomNavigationBarItem("Images/Leaderboard.png"),
           createBottomNavigationBarItem("Images/Character.png")
@@ -105,5 +99,3 @@ class _LandingState extends State<Landing> {
     );
   }
 }
-
-

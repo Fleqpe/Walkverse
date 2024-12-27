@@ -5,19 +5,23 @@ import 'package:firebase_core/firebase_core.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: UserStepsScreen(),
     );
   }
 }
 
 class UserStepsScreen extends StatefulWidget {
+  const UserStepsScreen({super.key});
+
   @override
   _UserStepsScreenState createState() => _UserStepsScreenState();
 }
@@ -37,7 +41,7 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Steps'),
+        title: const Text('User Steps'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -45,27 +49,27 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
           children: [
             TextField(
               controller: _userIdController,
-              decoration: InputDecoration(labelText: 'User ID'),
+              decoration: const InputDecoration(labelText: 'User ID'),
             ),
             TextField(
               controller: _stepAmountController,
-              decoration: InputDecoration(labelText: 'Step Amount'),
+              decoration: const InputDecoration(labelText: 'Step Amount'),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: _dateController,
-              decoration: InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
+              decoration: const InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
             ),
             Row(
               children: [
                 ElevatedButton(
                   onPressed: _addUserStep,
-                  child: Text('Add Step'),
+                  child: const Text('Add Step'),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: _getUserSteps,
-                  child: Text('Get Steps'),
+                  child: const Text('Get Steps'),
                 ),
                 
               ],
@@ -74,17 +78,17 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
             
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: "E-posta"),
+              decoration: const InputDecoration(labelText: "E-posta"),
             ),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: "Şifre"),
+              decoration: const InputDecoration(labelText: "Şifre"),
               obscureText: true,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _register,
-              child: Text("Kayıt Ol"),
+              child: const Text("Kayıt Ol"),
             ),
           
             Expanded(
@@ -134,12 +138,12 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Kayıt Başarısız")),
+          const SnackBar(content: Text("Kayıt Başarısız")),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Lütfen tüm alanları doldurun")),
+        const SnackBar(content: Text("Lütfen tüm alanları doldurun")),
       );
     }
   }
