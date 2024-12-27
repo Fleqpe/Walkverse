@@ -31,11 +31,9 @@ class ProfilePage extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20), // Araya boşluk ekliyoruz
-            const ProfileOption(title: "Konum"),
+            const SizedBox(height: 10), // Araya boşluk ekliyoruz
             const ProfileOption(title: "Avatarını Değiştir"),
             const ProfileOption(title: "Avatar Kombinleri"),
-            const ProfileOption(title: "Arkadaşlarını Davet Et"),
             const ProfileOption(title: "Arkadaşlarım"),
           ],
         ),

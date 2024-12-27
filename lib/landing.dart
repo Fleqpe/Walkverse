@@ -3,7 +3,6 @@ import 'package:walkverse/anasayfa.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/profile.dart';
 import 'package:walkverse/renkler.dart';
-import 'package:walkverse/map.dart';
 import 'package:walkverse/leaderboard.dart';
 import 'package:walkverse/steps.dart';
 
@@ -16,7 +15,7 @@ class Landing extends StatefulWidget {
 
 class _LandingState extends State<Landing> {
   var currentWidgetText = "ANASAYFA";
-  Widget currentWidget = Anasayfa();
+  Widget currentWidget = const Anasayfa();
   int _selectedIndex = 0; // Variable to track selected index
   void _onItemTapped(int index) {
     setState(() {
@@ -26,23 +25,19 @@ class _LandingState extends State<Landing> {
     // Add the actions you want to trigger based on the selected index
     switch (index) {
       case 0:
-        currentWidget = Anasayfa();
+        currentWidget = const Anasayfa();
         currentWidgetText = "ANASAYFA";
         break;
       case 1:
-        currentWidget = Map();
-        currentWidgetText = "HARİTA";
-        break;
-      case 2:
-        currentWidget = Steps();
+        currentWidget = const StepDetailsWidget();
         currentWidgetText = "ADIMLAR";
         break;
-      case 3:
-        currentWidget = Leaderboard();
+      case 2:
+        currentWidget = const Leaderboard();
         currentWidgetText = "LİDER TABLOSU";
         break;
-      case 4:
-        currentWidget = ProfilePage();
+      case 3:
+        currentWidget = const ProfilePage();
         currentWidgetText = "PROFİL";
         break;
     }
@@ -62,7 +57,6 @@ class _LandingState extends State<Landing> {
         selectedFontSize: 0,
         items: [
           createBottomNavigationBarItem("Images/Home.png"),
-          createBottomNavigationBarItem("Images/Location.png"),
           createBottomNavigationBarItem("Images/Steps.png"),
           createBottomNavigationBarItem("Images/Leaderboard.png"),
           createBottomNavigationBarItem("Images/Character.png")
@@ -105,5 +99,3 @@ class _LandingState extends State<Landing> {
     );
   }
 }
-
-

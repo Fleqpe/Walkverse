@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -47,6 +48,7 @@ dependencies
 {
     implementation platform('com.google.firebase:firebase-bom:33.6.0')
 }
+<<<<<<< HEAD
 
 // Apply the Google services plugin at the bottom
 apply plugin: 'com.google.gms.google-services'
@@ -57,3 +59,5 @@ tasks.whenTaskAdded { task ->
         task.dependsOn 'processDebugGoogleServices'
     }
 }
+=======
+>>>>>>> baris

@@ -3,9 +3,8 @@ import 'package:walkverse/chart.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/renkler.dart';
 
-class Anasayfa extends StatelessWidget
-{
-  const Anasayfa({Key? key});
+class Anasayfa extends StatelessWidget {
+  const Anasayfa({super.key});
 
   @override
   Widget build(BuildContext context) {

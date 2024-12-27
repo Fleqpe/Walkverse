@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:walkverse/container.dart';
-import 'package:walkverse/renkler.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:walkverse/container.dart';
+import 'package:walkverse/renkler.dart';
 
 class ChartWidget extends StatefulWidget {
   const ChartWidget({super.key});
@@ -27,8 +27,8 @@ class _ChartWidgetState extends State<ChartWidget> {
       ),
       primaryYAxis: NumericAxis(
           numberFormat: NumberFormat('#'),
-          maximum: getBiggestStepCount(chartData.dataSource) * 1.5,
-          interval: getBiggestStepCount(chartData.dataSource) / 2,
+          maximum: chartData.getBiggestStepCount() * 1.5,
+          interval: chartData.getBiggestStepCount() / 2,
           majorGridLines: const MajorGridLines(
             width: 2,
             dashArray: [10, 10], // Makes the grid lines dashed

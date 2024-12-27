@@ -146,7 +146,6 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
       _userSteps = steps;
     });
   }
-
   Future<void> _register() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
