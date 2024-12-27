@@ -1,75 +1,63 @@
 import 'dart:async';
-
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:pedometer/pedometer.dart';
-import 'package:permission_handler/permission_handler.dart';
+
+import 'backend/backendtest.dart';
 
 class PedometerService {
-  static final PedometerService _instance = PedometerService._internal();
-  factory PedometerService() => _instance;
-  PedometerService._internal();
+  PedometerService._privateConstructor();
+  static final PedometerService _instance = PedometerService._privateConstructor();
+  factory PedometerService() {
+    return _instance;
+  }
 
-  final StreamController<String> _statusController = StreamController.broadcast();
-  final StreamController<String> _stepsController = StreamController.broadcast();
+  final service = FlutterBackgroundService();
+  final _userStepsService = UserStepsService();
+  int stepCount = 0;
+  int lastStepCount = 0;
 
-  Stream<String> get statusStream => _statusController.stream;
-  Stream<String> get stepsStream => _stepsController.stream;
+  Future<void> initializeService() async {
+    await service.configure(
+      androidConfiguration: AndroidConfiguration(
+        onStart: onStart,
+        isForegroundMode: true, // Ensure foreground mode is enabled
+        autoStart: true,
+      ),
+      iosConfiguration: IosConfiguration(), // iOS desteği için boş bırakabilirsiniz
+    );
 
-  late Stream<StepCount> _stepCountStream;
-  late Stream<PedestrianStatus> _pedestrianStatusStream;
-
-  String _status = '?';
-  String _steps = '?';
-
-  String get currentStatus => _status;
-  String get currentSteps => _steps;    // Adım sayısını db'ye kaydetmek için kullanılabilir.
-
-  Future<bool> _checkActivityRecognitionPermission() async {
-    bool granted = await Permission.activityRecognition.isGranted;
-
-    if (!granted) {
-      granted = await Permission.activityRecognition.request() == PermissionStatus.granted;
+    // Servisi başlat
+    service.startService();
+  }
+  
+  Future<void> sendStepsToDatabase(int steps) async {
+    try {
+      await _userStepsService.addUserStep("userId", steps, DateTime.now());
+      print("Steps sent to database: $steps");
+    } catch (e) {
+      print("Error sending steps to database: $e");
     }
-
-    return granted;
   }
 
-  Future<void> initialize() async {
-    bool granted = await _checkActivityRecognitionPermission();
-    if (!granted) {
-      _statusController.add('Permission Denied');
-      _stepsController.add('Permission Denied');
-      return;
-    }
-
-    _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
-    _pedestrianStatusStream.listen(_onPedestrianStatusChanged).onError(_onPedestrianStatusError);
-
-    _stepCountStream = Pedometer.stepCountStream;
-    _stepCountStream.listen(_onStepCount).onError(_onStepCountError);
+  int getCurrentStepCount() {
+    return stepCount;
   }
 
-  void _onStepCount(StepCount event) {
-    _steps = event.steps.toString();
-    _stepsController.add(_steps);
-  }
+  static void onStart(ServiceInstance service) {
+    // Pedometer ile adım sayısını dinle
+    Pedometer.stepCountStream.listen((event) {
+      _instance.stepCount = event.steps;
+      service.invoke("update", {"steps": _instance.stepCount});
+      print("Adım Sayısı: ${_instance.stepCount}"); // Konsola yazdır
+    });
 
-  void _onPedestrianStatusChanged(PedestrianStatus event) {
-    _status = event.status;
-    _statusController.add(_status);
-  }
-
-  void _onPedestrianStatusError(error) {
-    _status = 'Pedestrian Status not available';
-    _statusController.add(_status);
-  }
-
-  void _onStepCountError(error) {
-    _steps = 'Step Count not available';
-    _stepsController.add(_steps);
-  }
-
-  void dispose() {
-    _statusController.close();
-    _stepsController.close();
+    Timer.periodic(const Duration(minutes: 1), (timer) {
+      Timer.run(() async {
+        int temp = _instance.stepCount;
+        _instance.stepCount = _instance.stepCount - _instance.lastStepCount;
+        _instance.lastStepCount = temp;
+        await _instance.sendStepsToDatabase(_instance.stepCount);
+      });
+    });
   }
 }
