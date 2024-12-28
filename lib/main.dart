@@ -14,7 +14,6 @@ void main() async {
 
   // Gerekli izinleri iste
   await _requestPermissions();
-
   runApp(MultiProvider(
     providers: [ChangeNotifierProvider(create: (_) => ChartDataProvider())],
     child: const MyApp(),

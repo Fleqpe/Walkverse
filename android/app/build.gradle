@@ -48,16 +48,3 @@ dependencies
 {
     implementation platform('com.google.firebase:firebase-bom:33.6.0')
 }
-<<<<<<< HEAD
-
-// Apply the Google services plugin at the bottom
-apply plugin: 'com.google.gms.google-services'
-
-// Ensure processDebugGoogleServices runs before mapDebugSourceSetPaths
-tasks.whenTaskAdded { task ->
-    if (task.name == 'mapDebugSourceSetPaths') {
-        task.dependsOn 'processDebugGoogleServices'
-    }
-}
-=======
->>>>>>> baris
