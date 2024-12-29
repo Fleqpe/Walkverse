@@ -4,9 +4,14 @@ import 'package:walkverse/renkler.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
-
   @override
   Widget build(BuildContext context) {
+    final avatar = AvatarItem(
+      headId: 1,
+      hairId: 1,
+      glassesId: 1,
+      outfitId: 1,
+    );
     return Scaffold(
       backgroundColor: mainColor,
       body: Padding(
@@ -16,10 +21,10 @@ class ProfilePage extends StatelessWidget {
             Center(
               child: Column(
                 children: [
-                  const CircleAvatar(
-                    radius: 50, // Profil resmini biraz daha küçültüyoruz
-                    backgroundImage:
-                        AssetImage('Images/Character.png'), // Profil resminiz
+                  AvatarWidget(
+                    avatarItem: avatar,
+                    width: 100,
+                    height: 100,
                   ),
                   const SizedBox(height: 5), // Yüksekliği biraz azaltıyoruz
                   createText("Barış Kurt - Lv. 6", 16),
@@ -33,7 +38,6 @@ class ProfilePage extends StatelessWidget {
             ),
             const SizedBox(height: 10), // Araya boşluk ekliyoruz
             const ProfileOption(title: "Avatarını Değiştir"),
-            const ProfileOption(title: "Avatar Kombinleri"),
             const ProfileOption(title: "Arkadaşlarım"),
           ],
         ),
