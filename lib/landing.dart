@@ -17,6 +17,14 @@ class _LandingState extends State<Landing> {
   var currentWidgetText = "ANASAYFA";
   Widget currentWidget = const Anasayfa();
   int _selectedIndex = 0; // Variable to track selected index
+
+  void changeCurrentWidget(Widget newWidget, String newTitle) {
+    setState(() {
+      currentWidget = newWidget;
+      currentWidgetText = newTitle;
+    });
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index; // Update the selected index
@@ -25,25 +33,23 @@ class _LandingState extends State<Landing> {
     // Add the actions you want to trigger based on the selected index
     switch (index) {
       case 0:
-        currentWidget = const Anasayfa();
-        currentWidgetText = "ANASAYFA";
+        changeCurrentWidget(const Anasayfa(), "ANASAYFA");
         break;
       case 1:
-        currentWidget = const StepDetailsWidget();
-        currentWidgetText = "ADIMLAR";
+        changeCurrentWidget(const StepDetailsWidget(), "ADIMLAR");
         break;
       case 2:
-        currentWidget = const Leaderboard();
-        currentWidgetText = "LİDER TABLOSU";
+        changeCurrentWidget(const Leaderboard(), "LİDER TABLOSU");
         break;
       case 3:
-        currentWidget = const ProfilePage();
-        currentWidgetText = "PROFİL";
+        changeCurrentWidget(
+            ProfilePage(changeCurrentWidget: changeCurrentWidget), "PROFİL");
         break;
     }
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     final avatar = AvatarItem(
@@ -85,7 +91,6 @@ class _LandingState extends State<Landing> {
       ),
       body: currentWidget,
       endDrawer: Drawer(
-        // Sağdan kayan menü
         child: Container(
           color: accentColor,
           child: Column(
@@ -93,14 +98,12 @@ class _LandingState extends State<Landing> {
               ListTile(
                 title: const Text('Ayarlar', style: TextStyle(fontSize: 18)),
                 onTap: () {
-                  // Ayarlara gitmek için buraya işlem ekleyebilirsiniz
                   Navigator.pop(context);
                 },
               ),
               ListTile(
                 title: const Text('Çıkış Yap', style: TextStyle(fontSize: 18)),
                 onTap: () {
-                  // Çıkış işlemi yapılacaksa buraya kod ekleyebilirsiniz
                   Navigator.pop(context);
                 },
               ),

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:walkverse/changeAvatarPage.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/renkler.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  final Function(Widget, String) changeCurrentWidget;
+
+  const ProfilePage({super.key, required this.changeCurrentWidget});
   @override
   Widget build(BuildContext context) {
     final avatar = AvatarItem(
@@ -37,8 +40,16 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10), // Araya boşluk ekliyoruz
-            const ProfileOption(title: "Avatarını Değiştir"),
-            const ProfileOption(title: "Arkadaşlarım"),
+            ProfileOption(
+              title: "Avatarını Değiştir",
+              onTap: () => {
+                changeCurrentWidget(const ChangeAvatarPage(), "AVATAR DEĞİŞTİR")
+              },
+            ),
+            ProfileOption(
+              title: "Arkadaşlarım",
+              onTap: () => {},
+            ),
           ],
         ),
       ),
@@ -48,20 +59,23 @@ class ProfilePage extends StatelessWidget {
 
 class ProfileOption extends StatelessWidget {
   final String title;
+  final VoidCallback onTap;
 
-  const ProfileOption({super.key, required this.title});
+  const ProfileOption({
+    Key? key,
+    required this.title,
+    required this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
       color: accentColor,
-      margin: const EdgeInsets.symmetric(vertical: 5),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         title: createText(title, 18),
         trailing: const Icon(Icons.arrow_forward_ios),
-        onTap: () {
-          // İlgili işlem burada yapılacak
-        },
+        onTap: onTap,
       ),
     );
   }
