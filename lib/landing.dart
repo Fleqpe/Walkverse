@@ -46,6 +46,12 @@ class _LandingState extends State<Landing> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
+    final avatar = AvatarItem(
+      headId: 1,
+      hairId: 1,
+      glassesId: 1,
+      outfitId: 1,
+    );
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: mainColor,
@@ -59,7 +65,13 @@ class _LandingState extends State<Landing> {
           createBottomNavigationBarItem("Images/Home.png"),
           createBottomNavigationBarItem("Images/Steps.png"),
           createBottomNavigationBarItem("Images/Leaderboard.png"),
-          createBottomNavigationBarItem("Images/Character.png")
+          BottomNavigationBarItem(
+              icon: AvatarWidget(
+                avatarItem: avatar,
+                width: 50,
+                height: 50,
+              ),
+              label: "2")
         ],
       ),
       appBar: AppBar(

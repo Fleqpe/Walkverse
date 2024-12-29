@@ -70,3 +70,58 @@ Future<void> navigateTo(
     );
   }
 }
+
+class AvatarItem {
+  final int headId;
+  final int hairId;
+  final int glassesId;
+  final int outfitId;
+
+  AvatarItem({
+    required this.headId,
+    required this.hairId,
+    required this.glassesId,
+    required this.outfitId,
+  });
+}
+
+class AvatarWidget extends StatelessWidget {
+  final AvatarItem avatarItem;
+  final double width;
+  final double height;
+
+  const AvatarWidget({
+    Key? key,
+    required this.avatarItem,
+    this.width = 150,
+    this.height = 150,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.blueAccent,
+        border: Border.all(
+          color: Colors.black, // Outline rengi
+          width: 4.0, // Outline kalınlığı
+        ),
+      ),
+      child: ClipOval(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset('Images/Characters/Outfit/${avatarItem.outfitId}.png'),
+            Image.asset('Images/Characters/Heads/${avatarItem.headId}.png'),
+            Image.asset('Images/Characters/Hairs/${avatarItem.hairId}.png'),
+            Image.asset(
+                'Images/Characters/Eyeglasses/${avatarItem.glassesId}.png'),
+          ],
+        ),
+      ),
+    );
+  }
+}
