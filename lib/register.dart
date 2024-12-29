@@ -3,6 +3,8 @@ import 'package:walkverse/landing.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/login.dart';
 import 'package:walkverse/renkler.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'backend/backendtest.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});

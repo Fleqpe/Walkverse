@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:walkverse/login.dart';
 import 'package:walkverse/PedometerService.dart';
 import 'package:permission_handler/permission_handler.dart';
+//import 'package:firebase_core/firebase_core.dart'
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized
@@ -14,6 +15,7 @@ void main() async {
 
   // Gerekli izinleri iste
   await _requestPermissions();
+ 
   runApp(MultiProvider(
     providers: [ChangeNotifierProvider(create: (_) => ChartDataProvider())],
     child: const MyApp(),

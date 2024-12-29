@@ -4,7 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 class UserStepsService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final CollectionReference _userStepsCollection = FirebaseFirestore.instance.collection('UserSteps');
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   
+  Future<bool> checkIfUserExists(String email) async {
+  // Backend'e email'i kontrol etmesi için bir istek gönder
+  final response = await _auth.fetchSignInMethodsForEmail(email);
+  return response.isNotEmpty;
+}
 
   Future<void> addUserStep(String userId, int stepAmount, DateTime date) async {
     try {
@@ -46,7 +52,32 @@ class UserStepsService {
       print('Error updating user step: $e');
     }
   }
-  
+
+  Future<User?> loginUser(String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } catch (e) {
+      print('Error logging in: $e');
+      return null;
+    }
+  }
+
+  Future<User?> registerUser(String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } catch (e) {
+      print('Error registering user: $e');
+      return null;
+    }
+  }
 }
 
 class UserSession {
@@ -56,6 +87,11 @@ class UserSession {
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   
+  Future<bool> checkIfUserExists(String email) async {
+  // Backend'e email'i kontrol etmesi için bir istek gönder
+  final response = await _auth.fetchSignInMethodsForEmail(email);
+  return response.isNotEmpty;
+}
 
   Future<User?> registerUser({required String email, required String password}) async {
     try {
