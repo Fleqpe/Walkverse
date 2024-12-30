@@ -9,12 +9,6 @@ class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key, required this.changeCurrentWidget});
   @override
   Widget build(BuildContext context) {
-    final avatar = AvatarItem(
-      headId: 1,
-      hairId: 1,
-      glassesId: 1,
-      outfitId: 1,
-    );
     return Scaffold(
       backgroundColor: mainColor,
       body: Padding(
@@ -25,7 +19,7 @@ class ProfilePage extends StatelessWidget {
               child: Column(
                 children: [
                   AvatarWidget(
-                    avatarItem: avatar,
+                    avatarItem: avatarItem,
                     width: 100,
                     height: 100,
                   ),

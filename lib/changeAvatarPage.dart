@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:walkverse/container.dart';
 import 'package:walkverse/renkler.dart';
 
 class ChangeAvatarPage extends StatefulWidget {
@@ -9,31 +10,29 @@ class ChangeAvatarPage extends StatefulWidget {
 }
 
 class _ChangeAvatarPageState extends State<ChangeAvatarPage> {
-  // Kullanıcının seviyesi
-  int userLevel = 1;
-
-  // Eşya grupları
-  final Map<String, Map<String, int>> categories = {
+  int userLevel = 5;
+  final Map<String, Map<Item, int>> categories = {
     'Outfit': {
-      '1': 2,
+      Item("Cool Outfit", 1): 2,
     },
     'Heads': {
-      '1': 1,
+      Item("Test Head", 1): 1,
     },
     'Hairs': {
-      '1': 2,
+      Item("Hair 1", 1): 2,
+      Item("Test Head 1", 2): 1,
     },
     'Eyeglasses': {
-      '1': 4,
+      Item("Eyeglasses", 1): 4,
     },
   };
 
   // Seçilen kategori ve eşya
   String selectedCategory = 'Heads';
-  String selectedItem = '';
+  String selectedItem = '1';
 
   // Seçilen kategoriye göre öğeleri almak
-  Map<String, int> get selectedCategoryItems {
+  Map<Item, int> get selectedCategoryItems {
     return categories[selectedCategory]!;
   }
 
@@ -45,9 +44,21 @@ class _ChangeAvatarPageState extends State<ChangeAvatarPage> {
   }
 
   // Eşyayı seçme fonksiyonu
-  void changeSelectedItem(String item) {
+  void changeSelectedItem(Item item) {
     setState(() {
-      selectedItem = item;
+      if (selectedCategory == "Eyeglasses") {
+        avatarItem.glassesId = item.id;
+        selectedItem = avatarItem.glassesId.toString();
+      } else if (selectedCategory == "Hairs") {
+        avatarItem.hairId = item.id;
+        selectedItem = avatarItem.hairId.toString();
+      } else if (selectedCategory == "Heads") {
+        avatarItem.headId = item.id;
+        selectedItem = avatarItem.headId.toString();
+      } else if (selectedCategory == "Outfit") {
+        avatarItem.outfitId = item.id;
+        selectedItem = avatarItem.outfitId.toString();
+      }
     });
   }
 
@@ -57,7 +68,6 @@ class _ChangeAvatarPageState extends State<ChangeAvatarPage> {
       backgroundColor: mainColor,
       body: Column(
         children: [
-          // Üst kısımda ikonlar
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -82,17 +92,16 @@ class _ChangeAvatarPageState extends State<ChangeAvatarPage> {
               ],
             ),
           ),
-          // Kategoriye göre GridView
           Expanded(
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, // 3 sütunlu grid
+                crossAxisCount: 3,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
               ),
               itemCount: selectedCategoryItems.length,
               itemBuilder: (context, index) {
-                String item = selectedCategoryItems.keys.elementAt(index);
+                Item item = selectedCategoryItems.keys.elementAt(index);
                 int requiredLevel = selectedCategoryItems[item]!;
 
                 return GestureDetector(
@@ -100,30 +109,20 @@ class _ChangeAvatarPageState extends State<ChangeAvatarPage> {
                       ? () => changeSelectedItem(item)
                       : null, // Seviye yeterliyse tıklanabilir
                   child: Card(
-                    color: selectedItem == item
+                    color: isEquipped(selectedCategory, item)
                         ? Colors.green.withOpacity(0.5)
                         : Colors.white,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Örneğin her eşya için resim ekleyebilirsiniz
                         Image.asset(
-                          'Images/Characters/$selectedCategory/${item}.png',
-                          width: 70,
+                          'Images/Characters/$selectedCategory/${item.id}.png',
+                          width: 75,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          item,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: userLevel >= requiredLevel
-                                ? Colors.black
-                                : Colors.grey,
-                          ),
-                        ),
+                        createText(item.name, 16),
                         if (userLevel >= requiredLevel)
                           const Icon(
-                            Icons.check,
+                            Icons.lock_open,
                             color: Colors.green,
                             size: 20,
                           ),
@@ -140,6 +139,18 @@ class _ChangeAvatarPageState extends State<ChangeAvatarPage> {
   }
 }
 
+bool isEquipped(String selectedCategory, Item item) {
+  if (selectedCategory == "Eyeglasses") {
+    return avatarItem.glassesId == item.id;
+  } else if (selectedCategory == "Hairs") {
+    return avatarItem.hairId == item.id;
+  } else if (selectedCategory == "Heads") {
+    return avatarItem.headId == item.id;
+  } else {
+    return avatarItem.outfitId == item.id;
+  }
+}
+
 // Kategoriler
 class ItemCategory {
   final String name;
@@ -151,8 +162,7 @@ class ItemCategory {
 // Eşyalar
 class Item {
   final String name;
-  final int level;
   final int id;
 
-  Item(this.name, this.level) : id = DateTime.now().millisecondsSinceEpoch;
+  Item(this.name, this.id);
 }
