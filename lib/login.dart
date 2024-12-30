@@ -6,6 +6,7 @@ import 'package:walkverse/register.dart';
 import 'package:walkverse/renkler.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'backend/backendtest.dart';
+import 'landing.dart'; // Import the landing page
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -95,10 +96,10 @@ class _LoginPageState extends State<LoginPage> {
     User? user = await _userStepsService.loginUser(email, password);
 
     if (user != null) {
-      // Successful login, navigate to home page and store user session
+      // Successful login, navigate to landing page and store user session
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage(userId: user.uid)),
+        MaterialPageRoute(builder: (context) => const Landing()),
       );
     } else {
       // Display error message
@@ -115,10 +116,10 @@ class _LoginPageState extends State<LoginPage> {
     User? user = await _userStepsService.registerUser(email, password);
 
     if (user != null) {
-      // Successful registration, navigate to home page and store user session
+      // Successful registration, navigate to landing page and store user session
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage(userId: user.uid)),
+        MaterialPageRoute(builder: (context) => const Landing()),
       );
     } else {
       // Display error message
@@ -126,23 +127,5 @@ class _LoginPageState extends State<LoginPage> {
         _errorMessage = 'Registration failed';
       });
     }
-  }
-}
-
-class HomePage extends StatelessWidget {
-  final String userId;
-
-  HomePage({required this.userId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Home Page'),
-      ),
-      body: Center(
-        child: Text('Welcome, $userId'),
-      ),
-    );
   }
 }
