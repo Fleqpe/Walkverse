@@ -4,13 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class UserStepsService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final CollectionReference _userStepsCollection = FirebaseFirestore.instance.collection('UserSteps');
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   
-  Future<bool> checkIfUserExists(String email) async {
-  // Backend'e email'i kontrol etmesi için bir istek gönder
-  final response = await _auth.fetchSignInMethodsForEmail(email);
-  return response.isNotEmpty;
-}
 
   Future<void> addUserStep(String userId, int stepAmount, DateTime date) async {
     try {
@@ -53,31 +47,6 @@ class UserStepsService {
     }
   }
 
-  Future<User?> loginUser(String email, String password) async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential.user;
-    } catch (e) {
-      print('Error logging in: $e');
-      return null;
-    }
-  }
-
-  Future<User?> registerUser(String email, String password) async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential.user;
-    } catch (e) {
-      print('Error registering user: $e');
-      return null;
-    }
-  }
 }
 
 class UserSession {
@@ -86,56 +55,46 @@ class UserSession {
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
-  Future<bool> checkIfUserExists(String email) async {
-  // Backend'e email'i kontrol etmesi için bir istek gönder
-  final response = await _auth.fetchSignInMethodsForEmail(email);
-  return response.isNotEmpty;
-}
+  final CollectionReference _usersCollection = FirebaseFirestore.instance.collection('Users');
 
-  Future<User?> registerUser({required String email, required String password}) async {
+  Future<User?> registerUser({required String email, required String password, required String username}) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
       );
+      UserSession.userId = userCredential.user!.uid;
+
+      await _usersCollection.doc(UserSession.userId).set({
+        'experience': 1,
+        'level': 0,
+        'userName': username,
+      });
       print("Kullanıcı Oluşturuldu: ${userCredential.user?.email}");
       return userCredential.user; 
     } catch (e) {
       print("Hata: $e");
       return null;
     }
+
   }
 
-  
-  Future<String> loginUser(String email, String password) async {
+  Future<User?> loginUser(String email, String password) async {
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      if (userCredential.user != null) {
-        UserSession.userId = userCredential.user!.uid;
-        print(UserSession.userId);
-        return "success"; // Giriş başarılı
-      }
-    } on FirebaseAuthException catch (e) {
-        print("HATA MESAJI: " + e.code);
-        // switch (e.code) {
-        //   case 'user-not-found':
-        //     return "User not found. Please sign up.";
-        //   case 'wrong-password':
-        //     return "Incorrect password. Try again.";
-        //   case 'invalid-email':
-        //     return "The email address is not valid.";
-        //   case 'user-disabled':
-        //     return "This user account has been disabled.";
-        //   case 'too-many-requests':
-        //     return "Too many login attempts. Please try again later.";
-        //   default:
-            return "Login failed. ${e.message}";
-        //}
-      }
-    return "Login failed. Please try again.";
+      
+      UserSession.userId = userCredential.user!.uid;
+      print(UserSession.userId);
+     
+      return userCredential.user;
+    } catch (e) {
+      print('Error logging in: $e');
+      return null;
+    }
   }
+  
+  
 }

@@ -6,8 +6,19 @@ import 'package:walkverse/renkler.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'backend/backendtest.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
+
+  @override
+  _RegisterPageState createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final AuthService _authService = AuthService();
+  
 
   Widget buildTextField({
     required TextEditingController controller,
@@ -31,9 +42,9 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final usernameController = TextEditingController();
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
+    final usernameController = _usernameController;
+    final emailController = _emailController;
+    final passwordController = _passwordController;
 
     return Scaffold(
       backgroundColor: mainColor,
@@ -56,8 +67,11 @@ class RegisterPage extends StatelessWidget {
                   isPassword: true),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {
-                  navigateTo(context, const Landing(), false);
+                onPressed: () async{
+                  String result =  await _register() as String;
+                  if(result == "succes"){
+                    navigateTo(context, const LoginPage(), false);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accent3Color,
@@ -86,4 +100,39 @@ class RegisterPage extends StatelessWidget {
       ),
     );
   }
+
+  Future<String> _register() async {
+  final email = _emailController.text.trim();
+  final password = _passwordController.text.trim();
+  final username = _usernameController.text.trim(); 
+
+  if (email.isNotEmpty && password.isNotEmpty && username.isNotEmpty) {
+    try {
+      final user = await _authService.registerUser(email: email, password: password, username: username);
+      if (user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Kayıt Başarılı: ${user.email}")),
+        );
+        return "succes";
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Kayıt Başarısız")),
+        );
+        return "failure";
+      }
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Hata: $e")),
+      );
+      return "error";
+    }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Lütfen tüm alanları doldurun")),
+    );
+    return "fields_empty";
+  }
+}
+
 }

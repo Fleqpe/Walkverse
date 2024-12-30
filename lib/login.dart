@@ -16,8 +16,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final UserStepsService _userStepsService = UserStepsService();
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final AuthService _authService = AuthService();
   String _errorMessage = '';
 
   Widget buildTextField({
@@ -53,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
               createText("Giriş Yap", 40),
               const SizedBox(height: 40),
               buildTextField(
-                  controller: _usernameController, label: 'Kullanıcı Adı'),
+                  controller: _emailController, label: 'email'),
               const SizedBox(height: 20),
               buildTextField(
                   controller: _passwordController,
@@ -64,10 +65,20 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ElevatedButton(
-                    onPressed: _login,
-                    // () {
-                    //   navigateTo(context, const Landing(), false);
-                    // },
+                    onPressed: () {
+                        // E-posta boşsa, kullanıcıyı uyar
+                        if (_emailController.text.isEmpty) {
+                          setState(() {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Email cannot be empty.")),
+                        );
+                         });
+                        return;
+                        } else {
+                          // Eğer e-posta girildiyse _login fonksiyonunu çağır
+                          _login();
+                        }
+                      },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: accentColor,
                       minimumSize: const Size(150, 50),
@@ -86,6 +97,8 @@ class _LoginPageState extends State<LoginPage> {
                     child: createText("Kayıt Ol", 18),
                   ),
                   const SizedBox(height: 20),
+                ],
+              ),
               TextButton(
                 onPressed: () {
                   navigateTo(context, const ForgotPasswordPage(), true);
@@ -100,8 +113,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                ],
-              ),
               if (_errorMessage.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
@@ -117,32 +128,24 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> _login() async {
-  final email = _usernameController.text;
-  final password = _passwordController.text;
+  void _login() async {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
 
-  // Kullanıcının var olup olmadığını kontrol et
-  bool userExists = await _userStepsService.checkIfUserExists(email);
+    User? result = await _authService.loginUser(email, password);
 
-  if (userExists) {
-    // Kullanıcı varsa, giriş yapmayı dene
-    User? user = await _userStepsService.loginUser(email, password);
-
-    if (user != null) {
+    if (result != null) {
       // Başarılı giriş, ana sayfaya yönlendir
       navigateTo(context, const Landing(), false);
-    } else {
+    }else {
       // Kullanıcı varsa ama şifre yanlışsa hata mesajı göster
       setState(() {
-        _errorMessage = 'Incorrect password. Please try again.';
+      _errorMessage = 'email veya parola hatalı.';
       });
     }
-  } else {
-    // Kullanıcı kayıtlı değilse mesaj göster
-    setState(() {
-      _errorMessage = 'User not found. Please sign up.';
-    });
   }
+
 }
-}
+
+  
 
