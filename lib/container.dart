@@ -110,7 +110,7 @@ class AvatarWidget extends StatelessWidget {
         color: Colors.blueAccent,
         border: Border.all(
           color: Colors.black, // Outline rengi
-          width: 4.0, // Outline kalınlığı
+          width: width / 25, // Outline kalınlığı
         ),
       ),
       child: ClipOval(

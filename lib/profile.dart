@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:walkverse/changeAvatarPage.dart';
 import 'package:walkverse/container.dart';
+import 'package:walkverse/friends.dart';
 import 'package:walkverse/renkler.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -42,7 +43,7 @@ class ProfilePage extends StatelessWidget {
             ),
             ProfileOption(
               title: "Arkadaşlarım",
-              onTap: () => {},
+              onTap: () => {changeCurrentWidget(FriendsPage(), "ARKADAŞLARIM")},
             ),
           ],
         ),
