@@ -126,7 +126,7 @@ class _ChangeAvatarPageState extends State<ChangeAvatarPage> {
                         ? Colors.green
                         : userLevel >= requiredLevel
                             ? Colors.white
-                            : Colors.white.withValues(alpha: 0.5),
+                            : Colors.white,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

@@ -5,6 +5,7 @@ import 'package:walkverse/profile.dart';
 import 'package:walkverse/renkler.dart';
 import 'package:walkverse/leaderboard.dart';
 import 'package:walkverse/steps.dart';
+import 'backend/backendtest.dart';
 
 class Landing extends StatefulWidget {
   const Landing({super.key});
@@ -39,7 +40,7 @@ class _LandingState extends State<Landing> {
         changeCurrentWidget(const StepDetailsWidget(), "ADIMLAR");
         break;
       case 2:
-        changeCurrentWidget(const Leaderboard(), "LİDER TABLOSU");
+        changeCurrentWidget(LeaderboardPage(), "LİDER TABLOSU");
         break;
       case 3:
         changeCurrentWidget(

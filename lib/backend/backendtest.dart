@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class UserStepsService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final CollectionReference _userStepsCollection = FirebaseFirestore.instance.collection('UserSteps');
+  final CollectionReference _userFollowsCollection = FirebaseFirestore.instance.collection('UserFollows');
 
   Future<void> addUserStep(String userId, int stepAmount, DateTime date) async {
     try {
@@ -69,6 +70,171 @@ class UserStepsService {
     } catch (e) {
       print('Error registering user: $e');
       return null;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getLeaderboard() async {
+    try {
+      QuerySnapshot querySnapshot = await _userStepsCollection.get();
+      Map<String, int> userSteps = {};
+
+      for (var doc in querySnapshot.docs) {
+        String userId = doc['userId'];
+        int stepAmount = doc['stepAmount'];
+
+        if (userSteps.containsKey(userId)) {
+          userSteps[userId] = userSteps[userId]! + stepAmount;
+        } else {
+          userSteps[userId] = stepAmount;
+        }
+      }
+
+      List<Map<String, dynamic>> leaderboard = userSteps.entries
+          .map((entry) => {'userId': entry.key, 'totalSteps': entry.value})
+          .toList();
+
+      leaderboard.sort((a, b) => b['totalSteps'].compareTo(a['totalSteps']));
+
+      return leaderboard;
+    } catch (e) {
+      print('Error getting leaderboard: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getFollowedLeaderboard(String userId) async {
+    try {
+      // Get the list of users followed by the current user
+      QuerySnapshot followsSnapshot = await _userFollowsCollection.where('follower', isEqualTo: userId).get();
+      List<String> followedUsers = followsSnapshot.docs.map((doc) => doc['followed'] as String).toList();
+
+      // Add the current user to the list
+      followedUsers.add(userId);
+
+      // Get the steps for the followed users
+      QuerySnapshot stepsSnapshot = await _userStepsCollection.where('userId', whereIn: followedUsers).get();
+      Map<String, int> userSteps = {};
+
+      for (var doc in stepsSnapshot.docs) {
+        String userId = doc['userId'];
+        int stepAmount = doc['stepAmount'];
+
+        if (userSteps.containsKey(userId)) {
+          userSteps[userId] = userSteps[userId]! + stepAmount;
+        } else {
+          userSteps[userId] = stepAmount;
+        }
+      }
+
+      List<Map<String, dynamic>> leaderboard = userSteps.entries
+          .map((entry) => {'userId': entry.key, 'totalSteps': entry.value})
+          .toList();
+
+      leaderboard.sort((a, b) => b['totalSteps'].compareTo(a['totalSteps']));
+
+      return leaderboard;
+    } catch (e) {
+      print('Error getting followed leaderboard: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getLeaderboardByPeriod(String period) async {
+    try {
+      DateTime now = DateTime.now();
+      DateTime startDate;
+
+      if (period == 'weekly') {
+        startDate = now.subtract(Duration(days: now.weekday - 1));
+      } else if (period == 'monthly') {
+        startDate = DateTime(now.year, now.month, 1);
+      } else if (period == 'yearly') {
+        startDate = DateTime(now.year, 1, 1);
+      } else {
+        throw ArgumentError('Invalid period: $period');
+      }
+
+      QuerySnapshot querySnapshot = await _userStepsCollection
+          .where('date', isGreaterThanOrEqualTo: startDate)
+          .get();
+
+      Map<String, int> userSteps = {};
+
+      for (var doc in querySnapshot.docs) {
+        String userId = doc['userId'];
+        int stepAmount = doc['stepAmount'];
+
+        if (userSteps.containsKey(userId)) {
+          userSteps[userId] = userSteps[userId]! + stepAmount;
+        } else {
+          userSteps[userId] = stepAmount;
+        }
+      }
+
+      List<Map<String, dynamic>> leaderboard = userSteps.entries
+          .map((entry) => {'userId': entry.key, 'totalSteps': entry.value})
+          .toList();
+
+      leaderboard.sort((a, b) => b['totalSteps'].compareTo(a['totalSteps']));
+
+      return leaderboard;
+    } catch (e) {
+      print('Error getting leaderboard by period: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getFollowedLeaderboardByPeriod(String userId, String period) async {
+    try {
+      DateTime now = DateTime.now();
+      DateTime startDate;
+
+      if (period == 'weekly') {
+        startDate = now.subtract(Duration(days: now.weekday - 1));
+      } else if (period == 'monthly') {
+        startDate = DateTime(now.year, now.month, 1);
+      } else if (period == 'yearly') {
+        startDate = DateTime(now.year, 1, 1);
+      } else {
+        throw ArgumentError('Invalid period: $period');
+      }
+
+      // Get the list of users followed by the current user
+      QuerySnapshot followsSnapshot = await _userFollowsCollection.where('follower', isEqualTo: userId).get();
+      List<String> followedUsers = followsSnapshot.docs.map((doc) => doc['followed'] as String).toList();
+
+      // Add the current user to the list
+      followedUsers.add(userId);
+
+      // Get the steps for the followed users within the specified period
+      QuerySnapshot stepsSnapshot = await _userStepsCollection
+          .where('userId', whereIn: followedUsers)
+          .where('date', isGreaterThanOrEqualTo: startDate)
+          .get();
+
+      Map<String, int> userSteps = {};
+
+      for (var doc in stepsSnapshot.docs) {
+        String userId = doc['userId'];
+        int stepAmount = doc['stepAmount'];
+
+        if (userSteps.containsKey(userId)) {
+          userSteps[userId] = userSteps[userId]! + stepAmount;
+        } else {
+          userSteps[userId] = stepAmount;
+        }
+      }
+
+      List<Map<String, dynamic>> leaderboard = userSteps.entries
+          .map((entry) => {'userId': entry.key, 'totalSteps': entry.value})
+          .toList();
+
+      leaderboard.sort((a, b) => b['totalSteps'].compareTo(a['totalSteps']));
+
+      return leaderboard;
+    } catch (e) {
+      print('Error getting followed leaderboard by period: $e');
+      return [];
     }
   }
 }
