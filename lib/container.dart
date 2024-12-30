@@ -72,10 +72,10 @@ Future<void> navigateTo(
 }
 
 class AvatarItem {
-  final int headId;
-  final int hairId;
-  final int glassesId;
-  final int outfitId;
+  int headId;
+  int hairId;
+  int glassesId;
+  int outfitId;
 
   AvatarItem({
     required this.headId,
@@ -84,6 +84,9 @@ class AvatarItem {
     required this.outfitId,
   });
 }
+
+AvatarItem avatarItem =
+    AvatarItem(headId: 1, hairId: 1, glassesId: 1, outfitId: 1);
 
 class AvatarWidget extends StatelessWidget {
   final AvatarItem avatarItem;

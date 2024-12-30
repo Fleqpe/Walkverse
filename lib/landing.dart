@@ -52,12 +52,6 @@ class _LandingState extends State<Landing> {
 
   @override
   Widget build(BuildContext context) {
-    final avatar = AvatarItem(
-      headId: 1,
-      hairId: 1,
-      glassesId: 1,
-      outfitId: 1,
-    );
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: mainColor,
@@ -73,7 +67,7 @@ class _LandingState extends State<Landing> {
           createBottomNavigationBarItem("Images/Leaderboard.png"),
           BottomNavigationBarItem(
               icon: AvatarWidget(
-                avatarItem: avatar,
+                avatarItem: avatarItem,
                 width: 50,
                 height: 50,
               ),
