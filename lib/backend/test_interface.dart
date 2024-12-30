@@ -32,6 +32,8 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+    final TextEditingController _usernameController = TextEditingController();
+
   
   List<Map<String, dynamic>> _userSteps = [];
   String errorMessage = "";
@@ -150,9 +152,11 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
   Future<void> _register() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
+    final username = _usernameController.text.trim(); 
+
 
     if (email.isNotEmpty && password.isNotEmpty) {
-      final user = await _authService.registerUser(email: email, password: password);
+      final user = await _authService.registerUser(email: email, password: password, username: username);
 
       if (user != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -184,24 +188,24 @@ class _UserStepsScreenState extends State<UserStepsScreen> {
       return;
     }
 
-    String result = await _authService.loginUser(email, password);
-    setState(() {
-      errorMessage = result;
+    // String result = await _authService.loginUser(email, password);
+    // setState(() {
+    //   errorMessage = result;
       
-        ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),);
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text(errorMessage)),);
       
-    });
+    // });
 
-    if (result == "success") {
-      setState(() {
-        ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Giriş başarılı. Ana sayfaya yönlendirme yapılabilir.")),
-      );
+    // if (result == "success") {
+    //   setState(() {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text("Giriş başarılı. Ana sayfaya yönlendirme yapılabilir.")),
+    //   );
     
-      });
+    //   });
       // Giriş başarılı. Ana sayfaya yönlendirme yapılabilir.
-      //Navigator.pushReplacementNamed(context, '/home');
+      //Navigator.pushReplacementNamed(context, '/home');}
+
     }
   }
-}
