@@ -81,10 +81,17 @@ flutter:
     - Images/Settings.png 
     - Images/Steps.png 
     - Images/Home.png 
+    - Images/Characters/Heads/Icon.png
     - Images/Characters/Heads/1.png
-    - Images/Characters/Outfit/1.png 
+    - Images/Characters/Outfit/Icon.png
+    - Images/Characters/Outfit/1.png
+    - Images/Characters/Outfit/2.png 
+    - Images/Characters/Eyeglasses/Icon.png 
     - Images/Characters/Eyeglasses/1.png 
+    - Images/Characters/Eyeglasses/2.png 
+    - Images/Characters/Hairs/Icon.png 
     - Images/Characters/Hairs/1.png 
+    - Images/Characters/Hairs/2.png 
 
   # To add assets to your application, add an assets section, like this:
   # assets:

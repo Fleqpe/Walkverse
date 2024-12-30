@@ -10,20 +10,20 @@ class ChangeAvatarPage extends StatefulWidget {
 }
 
 class _ChangeAvatarPageState extends State<ChangeAvatarPage> {
-  int userLevel = 5;
+  int userLevel = 1;
   final Map<String, Map<Item, int>> categories = {
     'Outfit': {
-      Item("Cool Outfit", 1): 2,
+      Item("Cool Outfit", 1): 1,
     },
     'Heads': {
       Item("Test Head", 1): 1,
     },
     'Hairs': {
-      Item("Hair 1", 1): 2,
-      Item("Test Head 1", 2): 1,
+      Item("Hair 1", 1): 1,
+      Item("Test Head 1", 2): 2,
     },
     'Eyeglasses': {
-      Item("Eyeglasses", 1): 4,
+      Item("Eyeglasses", 1): 1,
     },
   };
 
@@ -74,19 +74,31 @@ class _ChangeAvatarPageState extends State<ChangeAvatarPage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.face),
+                  icon: Image.asset(
+                    'Images/Characters/Heads/Icon.png',
+                    width: 25,
+                  ),
                   onPressed: () => changeCategory('Heads'),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.shield),
+                  icon: Image.asset(
+                    'Images/Characters/Hairs/Icon.png',
+                    width: 25,
+                  ),
                   onPressed: () => changeCategory('Hairs'),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.boy_rounded),
+                  icon: Image.asset(
+                    'Images/Characters/Outfit/Icon.png',
+                    width: 25,
+                  ),
                   onPressed: () => changeCategory('Outfit'),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.remove_red_eye),
+                  icon: Image.asset(
+                    'Images/Characters/Eyeglasses/Icon.png',
+                    width: 25,
+                  ),
                   onPressed: () => changeCategory('Eyeglasses'),
                 ),
               ],
@@ -110,8 +122,10 @@ class _ChangeAvatarPageState extends State<ChangeAvatarPage> {
                       : null, // Seviye yeterliyse tıklanabilir
                   child: Card(
                     color: isEquipped(selectedCategory, item)
-                        ? Colors.green.withOpacity(0.5)
-                        : Colors.white,
+                        ? Colors.green
+                        : userLevel >= requiredLevel
+                            ? Colors.white
+                            : Colors.white.withValues(alpha: 0.5),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -124,6 +138,12 @@ class _ChangeAvatarPageState extends State<ChangeAvatarPage> {
                           const Icon(
                             Icons.lock_open,
                             color: Colors.green,
+                            size: 20,
+                          )
+                        else
+                          const Icon(
+                            Icons.lock,
+                            color: Colors.red,
                             size: 20,
                           ),
                       ],
