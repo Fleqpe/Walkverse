@@ -2,9 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserStepsService {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final CollectionReference _userStepsCollection = FirebaseFirestore.instance.collection('UserSteps');
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> addUserStep(String userId, int stepAmount, DateTime date) async {
     try {
@@ -46,6 +45,40 @@ class UserStepsService {
       print('Error updating user step: $e');
     }
   }
+
+  Future<User?> loginUser(String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } catch (e) {
+      print('Error logging in: $e');
+      return null;
+    }
+  }
+
+  Future<User?> registerUser(String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } catch (e) {
+      print('Error registering user: $e');
+      return null;
+    }
+  }
+}
+
+class UserSession {
+    static String? userId; // Kullanıcı ID'sini saklamak için
+}
+
+class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   
 
   Future<User?> registerUser({required String email, required String password}) async {
@@ -60,5 +93,37 @@ class UserStepsService {
       print("Hata: $e");
       return null;
     }
+  }
+
+  
+  Future<String> loginUser(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      if (userCredential.user != null) {
+        UserSession.userId = userCredential.user!.uid;
+        print(UserSession.userId);
+        return "success"; // Giriş başarılı
+      }
+    } on FirebaseAuthException catch (e) {
+        print("HATA MESAJI: " + e.code);
+        // switch (e.code) {
+        //   case 'user-not-found':
+        //     return "User not found. Please sign up.";
+        //   case 'wrong-password':
+        //     return "Incorrect password. Try again.";
+        //   case 'invalid-email':
+        //     return "The email address is not valid.";
+        //   case 'user-disabled':
+        //     return "This user account has been disabled.";
+        //   case 'too-many-requests':
+        //     return "Too many login attempts. Please try again later.";
+        //   default:
+            return "Login failed. ${e.message}";
+        //}
+      }
+    return "Login failed. Please try again.";
   }
 }

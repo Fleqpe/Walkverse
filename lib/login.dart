@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:walkverse/landing.dart';
+import 'package:walkverse/anasayfa.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/forgot_password.dart';
 import 'package:walkverse/register.dart';
 import 'package:walkverse/renkler.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'backend/backendtest.dart';
+import 'landing.dart'; // Import the landing page
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final UserStepsService _userStepsService = UserStepsService();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  String _errorMessage = '';
 
   Widget buildTextField({
     required TextEditingController controller,
@@ -30,9 +43,6 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final usernameController = TextEditingController();
-    final passwordController = TextEditingController();
-
     return Scaffold(
       backgroundColor: mainColor,
       body: Center(
@@ -44,10 +54,10 @@ class LoginPage extends StatelessWidget {
               createText("Giriş Yap", 40),
               const SizedBox(height: 40),
               buildTextField(
-                  controller: usernameController, label: 'Kullanıcı Adı'),
+                  controller: _usernameController, label: 'Kullanıcı Adı'),
               const SizedBox(height: 20),
               buildTextField(
-                  controller: passwordController,
+                  controller: _passwordController,
                   label: 'Şifre',
                   isPassword: true),
               const SizedBox(height: 30),
@@ -55,46 +65,67 @@ class LoginPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      navigateTo(context, const Landing(), false);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: accentColor,
-                      minimumSize: const Size(150, 50),
-                    ),
-                    child: createText("Giriş Yap", 18),
+                    onPressed: _login,
+                    child: Text('Giriş Yap'),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      navigateTo(context, const RegisterPage(), true);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: accent3Color,
-                      minimumSize: const Size(150, 50),
-                    ),
-                    child: createText("Kayıt Ol", 18),
+                    onPressed: _register,
+                    child: Text('Kayıt Ol'),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: () {
-                  navigateTo(context, const ForgotPasswordPage(), true);
-                },
-                child: Text(
-                  'Şifremi Unuttum',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 20,
-                    fontFamily: font2,
-                    decoration: TextDecoration.underline,
+              if (_errorMessage.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Text(
+                    _errorMessage,
+                    style: TextStyle(color: Colors.red),
                   ),
                 ),
-              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _login() async {
+    final email = _usernameController.text;
+    final password = _passwordController.text;
+
+    User? user = await _userStepsService.loginUser(email, password);
+
+    if (user != null) {
+      // Successful login, navigate to landing page and store user session
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Landing()),
+      );
+    } else {
+      // Display error message
+      setState(() {
+        _errorMessage = 'Invalid username or password';
+      });
+    }
+  }
+
+  Future<void> _register() async {
+    final email = _usernameController.text;
+    final password = _passwordController.text;
+
+    User? user = await _userStepsService.registerUser(email, password);
+
+    if (user != null) {
+      // Successful registration, navigate to landing page and store user session
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Landing()),
+      );
+    } else {
+      // Display error message
+      setState(() {
+        _errorMessage = 'Registration failed';
+      });
+    }
   }
 }
