@@ -24,6 +24,7 @@ class _ChangeAvatarPageState extends State<ChangeAvatarPage> {
     },
     'Eyeglasses': {
       Item("Eyeglasses", 1): 1,
+      Item("Eyeglasses 2", 2): 1,
     },
   };
 
