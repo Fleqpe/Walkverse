@@ -2,13 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:walkverse/chart.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/renkler.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'backend/backendtest.dart';
 
 class Anasayfa extends StatelessWidget {
   const Anasayfa({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return FutureBuilder<String?>(
+      future: getUsernameFromFirestore(),
+      builder: (context, snapshot) {
+        // Yüklenme durumunu kontrol et
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        // Hata durumunu kontrol et
+        if (snapshot.hasError) {
+          return Center(
+            child: Text("Bir hata oluştu: ${snapshot.error}"),
+          );
+        }
+
+        // Veri boşsa kullanıcı bulunamadı mesajı göster
+        if (!snapshot.hasData || snapshot.data == null) {
+          return const Center(
+            child: Text("Kullanıcı bulunamadı"),
+          );
+        }
+
+        // Başarılı durumda UI'ı oluştur
+        final username = snapshot.data!;
+        return Column(
       children: [
         const Padding(padding: EdgeInsets.only(top: 40)),
         Center(
@@ -31,7 +57,7 @@ class Anasayfa extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        createText("Barış Kurt", 16),
+                        createText(username, 16),
                         createText("Lv. 9", 16)
                       ],
                     ),
@@ -135,5 +161,30 @@ class Anasayfa extends StatelessWidget {
         )),
       ],
     );
+    
+      },
+    );
+  }
+
+
+  Future<String?> getUsernameFromFirestore() async {
+    try {
+      // Firestore'daki "Users" koleksiyonunda userId ile eşleşen dökümanı al
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(UserSession.userId)
+          .get();
+
+      if (userDoc.exists) {
+      
+        return userDoc['userName']; 
+      } else {
+        print("Kullanıcı bulunamadı.");
+        return null;
+      }
+    } catch (e) {
+      print("Hata oluştu: $e");
+      return null;
+    }
   }
 }

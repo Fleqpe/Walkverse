@@ -85,7 +85,6 @@ class AuthService {
         email: email,
         password: password,
       );
-      
       UserSession.userId = userCredential.user!.uid;
       print(UserSession.userId);
      
