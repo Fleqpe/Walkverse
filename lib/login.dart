@@ -96,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
     User? user = await _userStepsService.loginUser(email, password);
 
     if (user != null) {
+      UserSession.userId = user.uid;
       // Successful login, navigate to landing page and store user session
       Navigator.pushReplacement(
         context,

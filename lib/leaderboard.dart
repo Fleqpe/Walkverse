@@ -9,6 +9,7 @@ class LeaderboardPage extends StatefulWidget {
 class _LeaderboardPageState extends State<LeaderboardPage> {
   final UserStepsService _userStepsService = UserStepsService();
   List<Map<String, dynamic>> _leaderboard = [];
+  Map<String, String> _usernames = {};
   String filterType = "Dünya"; // Dünya, Arkadaşlar
   String timeFilter = "Yıl"; // Yıl, Ay, Hafta
   String? userId;
@@ -16,7 +17,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   @override
   void initState() {
     super.initState();
-    userId = UserSession.userId;
+    userId = UserSession.getUserId();
     _fetchLeaderboard();
   }
 
@@ -31,8 +32,13 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     } else {
       leaderboard = [];
     }
+
+    List<String> userIds = leaderboard.map((entry) => entry['userId'] as String).toList();
+    Map<String, String> usernames = await _userStepsService.getUsernames(userIds);
+
     setState(() {
       _leaderboard = leaderboard;
+      _usernames = usernames;
     });
   }
 
@@ -111,7 +117,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                   ),
                 ),
                 Text(
-                  "KULLANICI ID",
+                  "KULLANICI ADI",
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -132,7 +138,12 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 itemCount: _leaderboard.length,
                 itemBuilder: (context, index) {
                   final user = _leaderboard[index];
-                  return Padding(
+                  final userId = user['userId'];
+                  final username = _usernames[userId] ?? 'Unknown';
+                  final isCurrentUser = userId == this.userId;
+
+                  return Container(
+                    color: isCurrentUser ? Colors.blue.withOpacity(0.2) : Colors.transparent,
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -142,7 +153,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                           style: TextStyle(fontSize: 16),
                         ),
                         Text(
-                          user['userId'],
+                          username,
                           style: TextStyle(fontSize: 16),
                         ),
                         Text(

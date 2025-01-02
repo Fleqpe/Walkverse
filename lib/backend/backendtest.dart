@@ -5,6 +5,7 @@ class UserStepsService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final CollectionReference _userStepsCollection = FirebaseFirestore.instance.collection('UserSteps');
   final CollectionReference _userFollowsCollection = FirebaseFirestore.instance.collection('UserFollows');
+  final CollectionReference _usersCollection = FirebaseFirestore.instance.collection('Users');
 
   Future<void> addUserStep(String userId, int stepAmount, DateTime date) async {
     try {
@@ -75,12 +76,15 @@ class UserStepsService {
 
   Future<List<Map<String, dynamic>>> getLeaderboard() async {
     try {
+      print('Fetching leaderboard data...');
       QuerySnapshot querySnapshot = await _userStepsCollection.get();
+      print('QuerySnapshot received: ${querySnapshot.docs.length} documents');
       Map<String, int> userSteps = {};
 
       for (var doc in querySnapshot.docs) {
         String userId = doc['userId'];
         int stepAmount = doc['stepAmount'];
+        print('Processing document: userId=$userId, stepAmount=$stepAmount');
 
         if (userSteps.containsKey(userId)) {
           userSteps[userId] = userSteps[userId]! + stepAmount;
@@ -95,6 +99,7 @@ class UserStepsService {
 
       leaderboard.sort((a, b) => b['totalSteps'].compareTo(a['totalSteps']));
 
+      print('Leaderboard generated: $leaderboard');
       return leaderboard;
     } catch (e) {
       print('Error getting leaderboard: $e');
@@ -104,20 +109,26 @@ class UserStepsService {
 
   Future<List<Map<String, dynamic>>> getFollowedLeaderboard(String userId) async {
     try {
+      print('Fetching followed leaderboard data for user: $userId');
       // Get the list of users followed by the current user
       QuerySnapshot followsSnapshot = await _userFollowsCollection.where('follower', isEqualTo: userId).get();
+      print('Followed users snapshot received: ${followsSnapshot.docs.length} documents');
       List<String> followedUsers = followsSnapshot.docs.map((doc) => doc['followed'] as String).toList();
+      print('Followed users: $followedUsers');
 
       // Add the current user to the list
       followedUsers.add(userId);
+      print('Followed users including current user: $followedUsers');
 
       // Get the steps for the followed users
       QuerySnapshot stepsSnapshot = await _userStepsCollection.where('userId', whereIn: followedUsers).get();
+      print('Steps snapshot received: ${stepsSnapshot.docs.length} documents');
       Map<String, int> userSteps = {};
 
       for (var doc in stepsSnapshot.docs) {
         String userId = doc['userId'];
         int stepAmount = doc['stepAmount'];
+        print('Processing document: userId=$userId, stepAmount=$stepAmount');
 
         if (userSteps.containsKey(userId)) {
           userSteps[userId] = userSteps[userId]! + stepAmount;
@@ -132,6 +143,7 @@ class UserStepsService {
 
       leaderboard.sort((a, b) => b['totalSteps'].compareTo(a['totalSteps']));
 
+      print('Followed leaderboard generated: $leaderboard');
       return leaderboard;
     } catch (e) {
       print('Error getting followed leaderboard: $e');
@@ -154,15 +166,18 @@ class UserStepsService {
         throw ArgumentError('Invalid period: $period');
       }
 
+      print('Fetching leaderboard data for period: $period from $startDate to $now');
       QuerySnapshot querySnapshot = await _userStepsCollection
           .where('date', isGreaterThanOrEqualTo: startDate)
           .get();
+      print('QuerySnapshot received: ${querySnapshot.docs.length} documents');
 
       Map<String, int> userSteps = {};
 
       for (var doc in querySnapshot.docs) {
         String userId = doc['userId'];
         int stepAmount = doc['stepAmount'];
+        print('Processing document: userId=$userId, stepAmount=$stepAmount');
 
         if (userSteps.containsKey(userId)) {
           userSteps[userId] = userSteps[userId]! + stepAmount;
@@ -177,6 +192,7 @@ class UserStepsService {
 
       leaderboard.sort((a, b) => b['totalSteps'].compareTo(a['totalSteps']));
 
+      print('Leaderboard generated: $leaderboard');
       return leaderboard;
     } catch (e) {
       print('Error getting leaderboard by period: $e');
@@ -199,24 +215,30 @@ class UserStepsService {
         throw ArgumentError('Invalid period: $period');
       }
 
+      print('Fetching followed leaderboard data for period: $period from $startDate to $now');
       // Get the list of users followed by the current user
       QuerySnapshot followsSnapshot = await _userFollowsCollection.where('follower', isEqualTo: userId).get();
+      print('Followed users snapshot received: ${followsSnapshot.docs.length} documents');
       List<String> followedUsers = followsSnapshot.docs.map((doc) => doc['followed'] as String).toList();
+      print('Followed users: $followedUsers');
 
       // Add the current user to the list
       followedUsers.add(userId);
+      print('Followed users including current user: $followedUsers');
 
       // Get the steps for the followed users within the specified period
       QuerySnapshot stepsSnapshot = await _userStepsCollection
           .where('userId', whereIn: followedUsers)
           .where('date', isGreaterThanOrEqualTo: startDate)
           .get();
+      print('Steps snapshot received: ${stepsSnapshot.docs.length} documents');
 
       Map<String, int> userSteps = {};
 
       for (var doc in stepsSnapshot.docs) {
         String userId = doc['userId'];
         int stepAmount = doc['stepAmount'];
+        print('Processing document: userId=$userId, stepAmount=$stepAmount');
 
         if (userSteps.containsKey(userId)) {
           userSteps[userId] = userSteps[userId]! + stepAmount;
@@ -231,16 +253,47 @@ class UserStepsService {
 
       leaderboard.sort((a, b) => b['totalSteps'].compareTo(a['totalSteps']));
 
+      print('Followed leaderboard generated: $leaderboard');
       return leaderboard;
     } catch (e) {
       print('Error getting followed leaderboard by period: $e');
       return [];
     }
   }
+
+  Future<Map<String, String>> getUsernames(List<String> userIds) async {
+    try {
+      print('Fetching usernames for userIds: $userIds');
+      QuerySnapshot querySnapshot = await _usersCollection.where(FieldPath.documentId, whereIn: userIds).get();
+      print('Usernames snapshot received: ${querySnapshot.docs.length} documents');
+
+      Map<String, String> usernames = {};
+      for (var doc in querySnapshot.docs) {
+        String userId = doc.id;
+        String username = doc['userName'];
+        print('Processing document: userId=$userId, userName=$username');
+        usernames[userId] = username;
+      }
+
+      print('Usernames fetched: $usernames');
+      return usernames;
+    } catch (e) {
+      print('Error fetching usernames: $e');
+      return {};
+    }
+  }
 }
 
 class UserSession {
-    static String? userId; // Kullanıcı ID'sini saklamak için
+  static String? userId;
+
+  static void setUserId(String id) {
+    userId = id;
+  }
+
+  static String? getUserId() {
+    return userId;
+  }
 }
 
 class AuthService {
