@@ -44,7 +44,7 @@ class _LandingState extends State<Landing> {
         break;
       case 3:
         changeCurrentWidget(
-            ProfilePage(changeCurrentWidget: changeCurrentWidget), "PROFİL");
+            const ProfilePage(), "PROFİL");
         break;
     }
   }

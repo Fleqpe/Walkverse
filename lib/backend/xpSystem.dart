@@ -13,6 +13,7 @@ class XpSystem {
     return {
       'level': level,
       'remainingXp': totalXp,
+      'xpForNextLevel': xpForNextLevel,
     };
   }
 
