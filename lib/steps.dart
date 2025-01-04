@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 import 'package:walkverse/renkler.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StepDetailsWidget extends StatefulWidget {
   const StepDetailsWidget({super.key});
@@ -19,8 +20,90 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
   @override
   void initState() {
     super.initState();
-    stepData = getDummyData("Hafta");
-    totalSteps = calculateTotalSteps(stepData);
+    _fetchStepData();
+  }
+
+  Future<void> _fetchStepData() async {
+    DateTime now = DateTime.now();
+    DateTime startDate;
+
+    if (selectedTimeframe == "Hafta") {
+      startDate = now.subtract(Duration(days: now.weekday - 1));
+    } else if (selectedTimeframe == "Ay") {
+      startDate = DateTime(now.year, now.month, 1);
+    } else if (selectedTimeframe == "Yıl") {
+      startDate = DateTime(now.year, 1, 1);
+    } else if (selectedTimeframe == "Özel" && selectedDateRange != null) {
+      startDate = selectedDateRange!.start;
+    } else {
+      return;
+    }
+
+    DateTime endDate = selectedTimeframe == "Özel" && selectedDateRange != null ? selectedDateRange!.end : now;
+
+    List<StepData> fetchedData = await getStepDataForRange(startDate, endDate);
+    setState(() {
+      stepData = fetchedData;
+      totalSteps = calculateTotalSteps(stepData);
+    });
+  }
+
+  Future<List<StepData>> getStepDataForRange(DateTime start, DateTime end) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('UserSteps')
+        .where('userId', isEqualTo: UserSession.getUserId())
+        .where('date', isGreaterThanOrEqualTo: start)
+        .where('date', isLessThanOrEqualTo: end)
+        .get();
+
+    Map<String, int> stepsMap = {};
+
+    for (var doc in querySnapshot.docs) {
+      DateTime date = (doc['date'] as Timestamp).toDate();
+      String key = DateFormat('yyyy-MM-dd').format(date); // Use yyyy-MM-dd for sorting
+
+      if (stepsMap.containsKey(key)) {
+        stepsMap[key] = stepsMap[key]! + (doc['stepAmount'] as int);
+      } else {
+        stepsMap[key] = doc['stepAmount'];
+      }
+    }
+
+    // Fill in missing days or months with 0 steps
+    if (selectedTimeframe == "Yıl") {
+      for (int i = 1; i <= 12; i++) {
+        String month = DateFormat('MMM').format(DateTime(0, i));
+        if (!stepsMap.containsKey(month)) {
+          stepsMap[month] = 0;
+        }
+      }
+    } else {
+      for (DateTime date = start; date.isBefore(end) || date.isAtSameMomentAs(end); date = date.add(Duration(days: 1))) {
+        String day = DateFormat('yyyy-MM-dd').format(date);
+        if (!stepsMap.containsKey(day)) {
+          stepsMap[day] = 0;
+        }
+      }
+    }
+
+    List<StepData> stepDataList = stepsMap.entries
+        .map((entry) => StepData(entry.key, entry.value))
+        .toList();
+
+    // Sort the stepDataList by date
+    stepDataList.sort((a, b) => a.day.compareTo(b.day));
+
+    // Convert date format for display
+    stepDataList = stepDataList.map((data) {
+      String displayDate = DateFormat('d MMM').format(DateFormat('yyyy-MM-dd').parse(data.day));
+      return StepData(displayDate, data.steps);
+    }).toList();
+
+    return stepDataList;
+  }
+
+  int calculateTotalSteps(List<StepData> stepData) {
+    return stepData.fold(0, (sum, item) => sum + item.steps);
   }
 
   @override
@@ -46,15 +129,10 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                   DropdownMenuItem(value: "Yıl", child: Text("Yıl")),
                   DropdownMenuItem(value: "Özel", child: Text("Özel")),
                 ],
-                onChanged: (value) {
+                onChanged: (String? newValue) {
                   setState(() {
-                    selectedTimeframe = value!;
-                    if (selectedTimeframe == "Özel") {
-                      _selectDateRange(); // Show date range picker for "Özel"
-                    } else {
-                      stepData = getDummyData(selectedTimeframe);
-                      totalSteps = calculateTotalSteps(stepData);
-                    }
+                    selectedTimeframe = newValue!;
+                    _fetchStepData();
                   });
                 },
               ),
@@ -95,7 +173,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                     ColumnSeries<StepData, String>(
                       dataSource: stepData,
                       xValueMapper: (StepData data, _) => data.day,
-                      yValueMapper: (StepData data, _) => data.stepCount,
+                      yValueMapper: (StepData data, _) => data.steps,
                       color: accent3Color,
                     ),
                   ],
@@ -106,34 +184,6 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         ),
       ),
     );
-  }
-
-  // Dummy data generator for Hafta, Ay, and Yıl
-  List<StepData> getDummyData(String timeframe) {
-    if (timeframe == "Hafta") {
-      return [
-        StepData("Pzt", 1200),
-        StepData("Sal", 2300),
-        StepData("Çar", 1800),
-        StepData("Per", 2400),
-        StepData("Cum", 2200),
-        StepData("Cmt", 3000),
-        StepData("Pzr", 2800),
-      ];
-    } else if (timeframe == "Ay") {
-      return List.generate(
-          30, (index) => StepData("Gün ${index + 1}", (index + 1) * 100));
-    } else if (timeframe == "Yıl") {
-      return List.generate(
-          12, (index) => StepData("Ay ${index + 1}", (index + 1) * 1000));
-    } else {
-      return [];
-    }
-  }
-
-  // Calculate total steps
-  int calculateTotalSteps(List<StepData> data) {
-    return data.fold(0, (total, item) => total + item.stepCount);
   }
 
   // Date range picker for "Özel" option
@@ -147,30 +197,28 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
     if (picked != null && picked != selectedDateRange) {
       setState(() {
         selectedDateRange = picked;
-        // Generate dummy data based on the selected date range (you can replace this with real data)
-        stepData = getDummyDataForRange(picked.start, picked.end);
-        totalSteps = calculateTotalSteps(stepData);
+        _fetchStepData();
       });
     }
-  }
-
-  // Generate dummy data based on date range (replace with real data logic)
-  List<StepData> getDummyDataForRange(DateTime start, DateTime end) {
-    int days = end.difference(start).inDays;
-    return List.generate(
-      days + 1,
-      (index) => StepData(
-        DateFormat('d MMM').format(start.add(Duration(days: index))),
-        (index + 1) * 500, // Dummy step count
-      ),
-    );
   }
 }
 
 // StepData class
 class StepData {
   final String day;
-  final int stepCount;
+  final int steps;
 
-  StepData(this.day, this.stepCount);
+  StepData(this.day, this.steps);
+}
+
+class UserSession {
+  static String? userId;
+
+  static void setUserId(String id) {
+    userId = id;
+  }
+
+  static String? getUserId() {
+    return userId;
+  }
 }
