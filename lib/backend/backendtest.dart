@@ -37,6 +37,26 @@ class UserStepsService {
       return [];
     }
   }
+  Future<int> getTotalStepsScaled(String userId, DateTime startDate, DateTime endDate) async {
+  try {
+    QuerySnapshot querySnapshot = await _userStepsCollection
+        .where('userId', isEqualTo: userId)
+        .where('date', isGreaterThanOrEqualTo: startDate)
+        .where('date', isLessThanOrEqualTo: endDate)
+        .get();
+    int totalSteps = 0;
+
+    for (var doc in querySnapshot.docs) {
+      totalSteps += doc['stepAmount'] as int;
+    }
+
+    print('Total steps for user $userId from $startDate to $endDate: $totalSteps');
+    return totalSteps;
+  } catch (e) {
+    print('Error getting total steps for user $userId from $startDate to $endDate: $e');
+    return 0;
+  }
+}
 
   Future<void> updateUserStep(String documentId, int stepAmount, DateTime date) async {
     try {
@@ -300,21 +320,35 @@ class UserStepsService {
       print('Error getting total steps for user $userId: $e');
       return 0;
     }
+
   }
+    Future<String> getUsername(String userId) async {
+    try {
+      Map<String, String> usernames = await getUsernames([userId]);
+      return usernames[userId] ?? 'Unknown';
+    } catch (e) {
+      print('Error getting username for user $userId: $e');
+      return 'Unknown';
+    }
+    }
+  
 }
 
 class UserSession {
   
   static String? userId;
+  static int? totalSteps;
   static int? level = 1;
   static int? remainingXp = 0;
-
-
-  static void setUser(String id,int totalSteps) 
+  static String? userName = 'sample';
+  static UserStepsService _userStepsService = new UserStepsService();
+  static Future<void> setUser(String id, int totalSteps) async
   {
     userId = id;
+    totalSteps = totalSteps;
     level = XpSystem.calculateLevel(totalSteps)['level'];
     remainingXp = XpSystem.calculateLevel(totalSteps)['remainingXp'];
+    userName = await _userStepsService.getUsername(userId!);
   }
 
   static String? getUserId() {

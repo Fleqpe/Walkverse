@@ -16,7 +16,7 @@ class Landing extends StatefulWidget {
 
 class _LandingState extends State<Landing> {
   var currentWidgetText = "ANASAYFA";
-  Widget currentWidget = const Anasayfa();
+  Widget currentWidget =  Anasayfa();
   int _selectedIndex = 0; // Variable to track selected index
 
   void changeCurrentWidget(Widget newWidget, String newTitle) {
@@ -34,7 +34,7 @@ class _LandingState extends State<Landing> {
     // Add the actions you want to trigger based on the selected index
     switch (index) {
       case 0:
-        changeCurrentWidget(const Anasayfa(), "ANASAYFA");
+        changeCurrentWidget( Anasayfa(), "ANASAYFA");
         break;
       case 1:
         changeCurrentWidget(const StepDetailsWidget(), "ADIMLAR");

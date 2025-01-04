@@ -2,9 +2,64 @@ import 'package:flutter/material.dart';
 import 'package:walkverse/chart.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/renkler.dart';
+import 'backend/backendtest.dart';
+import 'backend/xpSystem.dart';
 
-class Anasayfa extends StatelessWidget {
+class Anasayfa extends StatefulWidget {
   const Anasayfa({super.key});
+
+  @override
+  _AnasayfaState createState() => _AnasayfaState();
+}
+
+class _AnasayfaState extends State<Anasayfa> {
+  UserStepsService userStepsService = UserStepsService();
+  String userName = 'Loading...';
+  int level = 0;
+  int remainingXp = 0;
+  int weeklyGoal = 0;
+  int monthlyGoal = 0;
+  int weeklyCount = 0;
+  int monthlyCount = 0;
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    String? userId = UserSession.getUserId();
+    if (userId != null) {
+      UserStepsService userStepsService = UserStepsService();
+
+      // Fetch username
+      userName = await userStepsService.getUsername(userId);
+
+      // Fetch total steps
+      int totalSteps = await userStepsService.getTotalSteps(userId);
+
+      // Calculate level and remaining XP
+      Map<String, int> levelInfo = XpSystem.calculateLevel(totalSteps);
+      level = levelInfo['level']!;
+      remainingXp = levelInfo['remainingXp']!;
+
+      // Calculate weekly and monthly goals
+
+      weeklyGoal = XpSystem.calculateWeeklyGoal(level);
+      monthlyGoal = XpSystem.calculateMonthlyGoal(level);
+
+      // Calculate weekly steps
+      DateTime now = DateTime.now();
+      DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+      weeklyCount = await userStepsService.getTotalStepsScaled(userId, startOfWeek, now);
+
+      DateTime startOfMonth = DateTime(now.year, now.month, 1);
+
+      monthlyCount = await userStepsService.getTotalStepsScaled(userId,startOfMonth, now);
+      setState(() {});
+
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +86,8 @@ class Anasayfa extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        createText("Barış Kurt", 16),
-                        createText("Lv. 9", 16)
+                        createText(userName, 16),
+                        createText("$level lv.", 16)
                       ],
                     ),
                   )
@@ -86,7 +141,7 @@ class Anasayfa extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             createText("HAFTALIK HEDEF", 18),
-                            createText("3655", 30)
+                            createText("$weeklyCount / $weeklyGoal", 25)
                           ],
                         ),
                       )),
@@ -102,7 +157,7 @@ class Anasayfa extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               createText("AYLIK HEDEF", 18),
-                              createText("3655", 30)
+                              createText("$monthlyCount / $monthlyGoal", 25)
                             ],
                           ),
                         )))

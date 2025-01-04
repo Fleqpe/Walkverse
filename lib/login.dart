@@ -97,7 +97,8 @@ class _LoginPageState extends State<LoginPage> {
 
     if (user != null) {
       UserSession.userId = user.uid;
-      UserSession.setUser(user.uid, _userStepsService.getTotalSteps(user.uid) as int);
+      int _totalSteps = await _userStepsService.getTotalSteps(user.uid);
+      UserSession.setUser(user.uid, _totalSteps);
       // Successful login, navigate to landing page and store user session
       Navigator.pushReplacement(
         context,
