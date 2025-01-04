@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'xpSystem.dart';
 
 class UserStepsService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -282,13 +283,38 @@ class UserStepsService {
       return {};
     }
   }
+
+  // New function to get total steps for a user
+  Future<int> getTotalSteps(String userId) async {
+    try {
+      QuerySnapshot querySnapshot = await _userStepsCollection.where('userId', isEqualTo: userId).get();
+      int totalSteps = 0;
+
+      for (var doc in querySnapshot.docs) {
+        totalSteps += doc['stepAmount'] as int;
+      }
+
+      print('Total steps for user $userId: $totalSteps');
+      return totalSteps;
+    } catch (e) {
+      print('Error getting total steps for user $userId: $e');
+      return 0;
+    }
+  }
 }
 
 class UserSession {
+  
   static String? userId;
+  static int? level = 1;
+  static int? remainingXp = 0;
 
-  static void setUserId(String id) {
+
+  static void setUser(String id,int totalSteps) 
+  {
     userId = id;
+    level = XpSystem.calculateLevel(totalSteps)['level'];
+    remainingXp = XpSystem.calculateLevel(totalSteps)['remainingXp'];
   }
 
   static String? getUserId() {
