@@ -220,7 +220,17 @@ class UserStepsService {
       return [];
     }
   }
-
+  Future<List<String>> getFollowedUsers(String userId) async {
+    try {
+      QuerySnapshot querySnapshot = await _userFollowsCollection.where('follower', isEqualTo: userId).get();
+      List<String> followedUsers = querySnapshot.docs.map((doc) => doc['followed'] as String).toList();
+      print('Followed users for user $userId: $followedUsers');
+      return followedUsers;
+    } catch (e) {
+      print('Error getting followed users for user $userId: $e');
+      return [];
+    }
+  }
   Future<List<Map<String, dynamic>>> getFollowedLeaderboardByPeriod(String userId, String period) async {
     try {
       DateTime now = DateTime.now();

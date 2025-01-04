@@ -30,6 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
     String? userId = UserSession.getUserId();
     if (userId != null) {
       UserStepsService userStepsService = UserStepsService();
+      XpSystem xpSystem = XpSystem();
 
       // Fetch username
       userName = await userStepsService.getUsername(userId);
@@ -49,6 +50,20 @@ class _ProfilePageState extends State<ProfilePage> {
 
       setState(() {});
     }
+  }
+
+  void changeCurrentWidget(BuildContext context, Widget widget, String title) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: Text(title),
+          ),
+          body: widget,
+        ),
+      ),
+    );
   }
 
   @override
@@ -81,15 +96,15 @@ class _ProfilePageState extends State<ProfilePage> {
           ProfileOption(
             title: "Avatarını Değiştir",
             onTap: () {
-              // Avatar değiştirme işlemi
+              changeCurrentWidget(context, const ChangeAvatarPage(), "AVATAR DEĞİŞTİR");
             },
           ),
           ProfileOption(
-            title: "Ayarlar",
+            title:"Arkadaşlarım",
             onTap: () {
-              // Ayarlar sayfasına yönlendirme
+              changeCurrentWidget(context, const FriendsPage(), "ARKADAŞLARIM");
             },
-          ),
+          )
         ],
       ),
     );
@@ -153,3 +168,4 @@ Widget createProgressBar(int remainingXp, int xpToNextLevel) {
     ],
   );
 }
+

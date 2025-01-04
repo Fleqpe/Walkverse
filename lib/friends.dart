@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/renkler.dart';
+import 'backend/backendtest.dart';
+import 'backend/xpSystem.dart';
 
 class FriendsPage extends StatefulWidget {
   const FriendsPage({super.key});
@@ -10,23 +12,53 @@ class FriendsPage extends StatefulWidget {
 }
 
 class _FriendsPageState extends State<FriendsPage> {
-  List<Map<String, dynamic>> friends = [
-    {
-      'name': 'Barış Kurt',
-      'level': 6,
-      'avatar': AvatarItem(glassesId: 1, headId: 1, hairId: 1, outfitId: 2)
-    },
-    {
-      'name': 'Can Karahan',
-      'level': 7,
-      'avatar': AvatarItem(glassesId: 2, headId: 1, hairId: 2, outfitId: 1)
-    },
-    {
-      'name': 'Harun Ege Yaşar',
-      'level': 5,
-      'avatar': AvatarItem(glassesId: 1, headId: 1, hairId: 1, outfitId: 1)
-    },
-  ];
+  List<Map<String, dynamic>> friends = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFriendsData();
+  }
+
+  Future<void> _fetchFriendsData() async {
+    String? userId = UserSession.getUserId();
+    if (userId != null) {
+      UserStepsService userStepsService = UserStepsService();
+      XpSystem xpSystem = XpSystem();
+
+      // Get followed users
+      List<String> followedUserIds = await userStepsService.getFollowedUsers(userId);
+
+      // Fetch friends data
+      for (String followedUserId in followedUserIds) {
+        // Get username
+        String userName = await userStepsService.getUsername(followedUserId);
+
+        // Get total steps
+        int totalSteps = await userStepsService.getTotalSteps(followedUserId);
+
+        // Calculate level
+        Map<String, int> levelInfo = XpSystem.calculateLevel(totalSteps);
+        int level = levelInfo['level']!;
+
+        // Create friend data
+        Map<String, dynamic> friendData = {
+          'name': userName,
+          'level': level,
+          'avatar': AvatarItem(
+            glassesId: (1 + (followedUserIds.indexOf(followedUserId) % 2)),
+            headId: (1 + (followedUserIds.indexOf(followedUserId) % 2)),
+            hairId: (1 + (followedUserIds.indexOf(followedUserId) % 2)),
+            outfitId: (1 + (followedUserIds.indexOf(followedUserId) % 2)),
+          ),
+        };
+
+        friends.add(friendData);
+      }
+
+      setState(() {});
+    }
+  }
 
   void removeFriend(int index) {
     setState(() {
