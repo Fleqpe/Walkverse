@@ -62,21 +62,18 @@ class _FriendsPageState extends State<FriendsPage> {
 
   final TextEditingController _controller = TextEditingController();
 
-  void removeFriend(String name,int index) {
+  void removeFriend(String name, int index) async {
     UserStepsService userStepsService = UserStepsService();
-    userStepsService.removeFriend(name, UserSession.getUserId()!);
-
-    setState(() {
-      friends.removeAt(index);
-    });
+    await userStepsService.removeFriend(name, UserSession.getUserId()!);
+    setState(() {});
   }
 
-  void addFriend(String name) {
+  void addFriend(String name) async {
     if (name.isNotEmpty) {
-     UserStepsService userStepsService = UserStepsService();
-      userStepsService.addFriend(UserSession.getUserId()!, name);
-      setState(() {});
       _controller.clear();
+      UserStepsService userStepsService = UserStepsService();
+      await userStepsService.addFriend(UserSession.getUserId()!, name);
+      setState(() {});
     }
   }
 
@@ -95,7 +92,7 @@ class _FriendsPageState extends State<FriendsPage> {
                   name: friend['name']!,
                   level: friend['level']!,
                   avatar: friend['avatar']!,
-                  onDelete: () => removeFriend(friend['name'],index),
+                  onDelete: () => removeFriend(friend['name'], index),
                 );
               },
             ),

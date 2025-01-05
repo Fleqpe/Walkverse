@@ -4,9 +4,12 @@ import 'xpSystem.dart';
 
 class UserStepsService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final CollectionReference _userStepsCollection = FirebaseFirestore.instance.collection('UserSteps');
-  final CollectionReference _userFollowsCollection = FirebaseFirestore.instance.collection('UserFollows');
-  final CollectionReference _usersCollection = FirebaseFirestore.instance.collection('Users');
+  final CollectionReference _userStepsCollection =
+      FirebaseFirestore.instance.collection('UserSteps');
+  final CollectionReference _userFollowsCollection =
+      FirebaseFirestore.instance.collection('UserFollows');
+  final CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('Users');
 
   Future<void> addUserStep(String userId, int stepAmount, DateTime date) async {
     try {
@@ -30,35 +33,43 @@ class UserStepsService {
 
   Future<List<Map<String, dynamic>>> getUserSteps(String userId) async {
     try {
-      QuerySnapshot querySnapshot = await _userStepsCollection.where('userId', isEqualTo: userId).get();
-      return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      QuerySnapshot querySnapshot =
+          await _userStepsCollection.where('userId', isEqualTo: userId).get();
+      return querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
     } catch (e) {
       print('Error getting user steps: $e');
       return [];
     }
   }
-  Future<int> getTotalStepsScaled(String userId, DateTime startDate, DateTime endDate) async {
-  try {
-    QuerySnapshot querySnapshot = await _userStepsCollection
-        .where('userId', isEqualTo: userId)
-        .where('date', isGreaterThanOrEqualTo: startDate)
-        .where('date', isLessThanOrEqualTo: endDate)
-        .get();
-    int totalSteps = 0;
 
-    for (var doc in querySnapshot.docs) {
-      totalSteps += doc['stepAmount'] as int;
+  Future<int> getTotalStepsScaled(
+      String userId, DateTime startDate, DateTime endDate) async {
+    try {
+      QuerySnapshot querySnapshot = await _userStepsCollection
+          .where('userId', isEqualTo: userId)
+          .where('date', isGreaterThanOrEqualTo: startDate)
+          .where('date', isLessThanOrEqualTo: endDate)
+          .get();
+      int totalSteps = 0;
+
+      for (var doc in querySnapshot.docs) {
+        totalSteps += doc['stepAmount'] as int;
+      }
+
+      print(
+          'Total steps for user $userId from $startDate to $endDate: $totalSteps');
+      return totalSteps;
+    } catch (e) {
+      print(
+          'Error getting total steps for user $userId from $startDate to $endDate: $e');
+      return 0;
     }
-
-    print('Total steps for user $userId from $startDate to $endDate: $totalSteps');
-    return totalSteps;
-  } catch (e) {
-    print('Error getting total steps for user $userId from $startDate to $endDate: $e');
-    return 0;
   }
-}
 
-  Future<void> updateUserStep(String documentId, int stepAmount, DateTime date) async {
+  Future<void> updateUserStep(
+      String documentId, int stepAmount, DateTime date) async {
     try {
       await _userStepsCollection.doc(documentId).update({
         'stepAmount': stepAmount,
@@ -71,7 +82,8 @@ class UserStepsService {
 
   Future<User?> loginUser(String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -84,7 +96,8 @@ class UserStepsService {
 
   Future<User?> registerUser(String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -128,13 +141,18 @@ class UserStepsService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getFollowedLeaderboard(String userId) async {
+  Future<List<Map<String, dynamic>>> getFollowedLeaderboard(
+      String userId) async {
     try {
       print('Fetching followed leaderboard data for user: $userId');
       // Get the list of users followed by the current user
-      QuerySnapshot followsSnapshot = await _userFollowsCollection.where('follower', isEqualTo: userId).get();
-      print('Followed users snapshot received: ${followsSnapshot.docs.length} documents');
-      List<String> followedUsers = followsSnapshot.docs.map((doc) => doc['followed'] as String).toList();
+      QuerySnapshot followsSnapshot = await _userFollowsCollection
+          .where('follower', isEqualTo: userId)
+          .get();
+      print(
+          'Followed users snapshot received: ${followsSnapshot.docs.length} documents');
+      List<String> followedUsers =
+          followsSnapshot.docs.map((doc) => doc['followed'] as String).toList();
       print('Followed users: $followedUsers');
 
       // Add the current user to the list
@@ -142,7 +160,9 @@ class UserStepsService {
       print('Followed users including current user: $followedUsers');
 
       // Get the steps for the followed users
-      QuerySnapshot stepsSnapshot = await _userStepsCollection.where('userId', whereIn: followedUsers).get();
+      QuerySnapshot stepsSnapshot = await _userStepsCollection
+          .where('userId', whereIn: followedUsers)
+          .get();
       print('Steps snapshot received: ${stepsSnapshot.docs.length} documents');
       Map<String, int> userSteps = {};
 
@@ -172,7 +192,8 @@ class UserStepsService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getLeaderboardByPeriod(String period) async {
+  Future<List<Map<String, dynamic>>> getLeaderboardByPeriod(
+      String period) async {
     try {
       DateTime now = DateTime.now();
       DateTime startDate;
@@ -187,7 +208,8 @@ class UserStepsService {
         throw ArgumentError('Invalid period: $period');
       }
 
-      print('Fetching leaderboard data for period: $period from $startDate to $now');
+      print(
+          'Fetching leaderboard data for period: $period from $startDate to $now');
       QuerySnapshot querySnapshot = await _userStepsCollection
           .where('date', isGreaterThanOrEqualTo: startDate)
           .get();
@@ -220,10 +242,14 @@ class UserStepsService {
       return [];
     }
   }
+
   Future<List<String>> getFollowedUsers(String userId) async {
     try {
-      QuerySnapshot querySnapshot = await _userFollowsCollection.where('follower', isEqualTo: userId).get();
-      List<String> followedUsers = querySnapshot.docs.map((doc) => doc['followed'] as String).toList();
+      QuerySnapshot querySnapshot = await _userFollowsCollection
+          .where('follower', isEqualTo: userId)
+          .get();
+      List<String> followedUsers =
+          querySnapshot.docs.map((doc) => doc['followed'] as String).toList();
       print('Followed users for user $userId: $followedUsers');
       return followedUsers;
     } catch (e) {
@@ -231,7 +257,9 @@ class UserStepsService {
       return [];
     }
   }
-  Future<List<Map<String, dynamic>>> getFollowedLeaderboardByPeriod(String userId, String period) async {
+
+  Future<List<Map<String, dynamic>>> getFollowedLeaderboardByPeriod(
+      String userId, String period) async {
     try {
       DateTime now = DateTime.now();
       DateTime startDate;
@@ -246,11 +274,16 @@ class UserStepsService {
         throw ArgumentError('Invalid period: $period');
       }
 
-      print('Fetching followed leaderboard data for period: $period from $startDate to $now');
+      print(
+          'Fetching followed leaderboard data for period: $period from $startDate to $now');
       // Get the list of users followed by the current user
-      QuerySnapshot followsSnapshot = await _userFollowsCollection.where('follower', isEqualTo: userId).get();
-      print('Followed users snapshot received: ${followsSnapshot.docs.length} documents');
-      List<String> followedUsers = followsSnapshot.docs.map((doc) => doc['followed'] as String).toList();
+      QuerySnapshot followsSnapshot = await _userFollowsCollection
+          .where('follower', isEqualTo: userId)
+          .get();
+      print(
+          'Followed users snapshot received: ${followsSnapshot.docs.length} documents');
+      List<String> followedUsers =
+          followsSnapshot.docs.map((doc) => doc['followed'] as String).toList();
       print('Followed users: $followedUsers');
 
       // Add the current user to the list
@@ -295,8 +328,11 @@ class UserStepsService {
   Future<Map<String, String>> getUsernames(List<String> userIds) async {
     try {
       print('Fetching usernames for userIds: $userIds');
-      QuerySnapshot querySnapshot = await _usersCollection.where(FieldPath.documentId, whereIn: userIds).get();
-      print('Usernames snapshot received: ${querySnapshot.docs.length} documents');
+      QuerySnapshot querySnapshot = await _usersCollection
+          .where(FieldPath.documentId, whereIn: userIds)
+          .get();
+      print(
+          'Usernames snapshot received: ${querySnapshot.docs.length} documents');
 
       Map<String, String> usernames = {};
       for (var doc in querySnapshot.docs) {
@@ -317,7 +353,8 @@ class UserStepsService {
   // New function to get total steps for a user
   Future<int> getTotalSteps(String userId) async {
     try {
-      QuerySnapshot querySnapshot = await _userStepsCollection.where('userId', isEqualTo: userId).get();
+      QuerySnapshot querySnapshot =
+          await _userStepsCollection.where('userId', isEqualTo: userId).get();
       int totalSteps = 0;
 
       for (var doc in querySnapshot.docs) {
@@ -330,9 +367,9 @@ class UserStepsService {
       print('Error getting total steps for user $userId: $e');
       return 0;
     }
-
   }
-    Future<String> getUsername(String userId) async {
+
+  Future<String> getUsername(String userId) async {
     try {
       Map<String, String> usernames = await getUsernames([userId]);
       return usernames[userId] ?? 'Unknown';
@@ -340,12 +377,15 @@ class UserStepsService {
       print('Error getting username for user $userId: $e');
       return 'Unknown';
     }
-    }
-  
+  }
+
   Future<void> addFriend(String followerId, String followedUsername) async {
     try {
       // Get the userId of the followed user by username
-      QuerySnapshot querySnapshot = await _usersCollection.where('userName', isEqualTo: followedUsername).get();
+      if (followerId == followedUsername) return;
+      QuerySnapshot querySnapshot = await _usersCollection
+          .where('userName', isEqualTo: followedUsername)
+          .get();
       if (querySnapshot.docs.isEmpty) {
         print('User with username $followedUsername not found');
         return;
@@ -364,55 +404,59 @@ class UserStepsService {
     }
   }
 
-Future<void> removeFriend(String followerUsername, String followedUsername) async {
-  try {
-    // Get the userId of the follower by username
-    QuerySnapshot followerQuerySnapshot = await _usersCollection.where('userName', isEqualTo: followerUsername).get();
-    if (followerQuerySnapshot.docs.isEmpty) {
-      print('User with username $followerUsername not found');
-      return;
+  Future<void> removeFriend(
+      String followerUsername, String followedUsername) async {
+    try {
+      if (followerUsername == followedUsername) return;
+      // Get the userId of the follower by username
+      QuerySnapshot followerQuerySnapshot = await _usersCollection
+          .where('userName', isEqualTo: followerUsername)
+          .get();
+      if (followerQuerySnapshot.docs.isEmpty) {
+        print('User with username $followerUsername not found');
+        return;
+      }
+      String followerId = followerQuerySnapshot.docs.first.id;
+
+      // Get the userId of the followed user by username
+      QuerySnapshot followedQuerySnapshot = await _usersCollection
+          .where('userName', isEqualTo: followedUsername)
+          .get();
+      if (followedQuerySnapshot.docs.isEmpty) {
+        print('User with username $followedUsername not found');
+        return;
+      }
+      String followedId = followedQuerySnapshot.docs.first.id;
+
+      // Find the follow relationship in UserFollows collection
+      QuerySnapshot querySnapshot = await _userFollowsCollection
+          .where('follower', isEqualTo: followerId)
+          .where('followed', isEqualTo: followedId)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        print('Follow relationship not found');
+        return;
+      }
+
+      // Remove the follow relationship
+      await _userFollowsCollection.doc(querySnapshot.docs.first.id).delete();
+
+      print('User $followerId successfully unfollowed $followedId');
+    } catch (e) {
+      print('Error removing friend: $e');
     }
-    String followerId = followerQuerySnapshot.docs.first.id;
-
-    // Get the userId of the followed user by username
-    QuerySnapshot followedQuerySnapshot = await _usersCollection.where('userName', isEqualTo: followedUsername).get();
-    if (followedQuerySnapshot.docs.isEmpty) {
-      print('User with username $followedUsername not found');
-      return;
-    }
-    String followedId = followedQuerySnapshot.docs.first.id;
-
-    // Find the follow relationship in UserFollows collection
-    QuerySnapshot querySnapshot = await _userFollowsCollection
-        .where('follower', isEqualTo: followerId)
-        .where('followed', isEqualTo: followedId)
-        .get();
-
-    if (querySnapshot.docs.isEmpty) {
-      print('Follow relationship not found');
-      return;
-    }
-
-    // Remove the follow relationship
-    await _userFollowsCollection.doc(querySnapshot.docs.first.id).delete();
-
-    print('User $followerId successfully unfollowed $followedId');
-  } catch (e) {
-    print('Error removing friend: $e');
   }
-}
 }
 
 class UserSession {
-  
   static String? userId;
   static int? totalSteps;
   static int? level = 1;
   static int? remainingXp = 0;
   static String? userName = 'sample';
   static UserStepsService _userStepsService = new UserStepsService();
-  static Future<void> setUser(String id, int totalSteps) async
-  {
+  static Future<void> setUser(String id, int totalSteps) async {
     userId = id;
     totalSteps = totalSteps;
     level = XpSystem.calculateLevel(totalSteps)['level'];
@@ -427,11 +471,16 @@ class UserSession {
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final CollectionReference _usersCollection = FirebaseFirestore.instance.collection('Users');
+  final CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('Users');
 
-  Future<User?> registerUser({required String email, required String password, required String username}) async {
+  Future<User?> registerUser(
+      {required String email,
+      required String password,
+      required String username}) async {
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
       );
@@ -443,24 +492,23 @@ class AuthService {
         'userName': username,
       });
       print("Kullanıcı Oluşturuldu: ${userCredential.user?.email}");
-      return userCredential.user; 
+      return userCredential.user;
     } catch (e) {
       print("Hata: $e");
       return null;
     }
-
   }
 
-  
   Future<User?> loginUser(String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
       UserSession.userId = userCredential.user!.uid;
       print(UserSession.userId);
-     
+
       return userCredential.user;
     } catch (e) {
       print('Error logging in: $e');
