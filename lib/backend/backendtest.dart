@@ -405,17 +405,17 @@ class UserStepsService {
   }
 
   Future<void> removeFriend(
-      String followerUsername, String followedId) async {
+      String followedUsername, String followerId) async {
 
       // Get the userId of the follower by username
       QuerySnapshot followerQuerySnapshot = await _usersCollection
-          .where('userName', isEqualTo: followerUsername)
+          .where('userName', isEqualTo: followedUsername)
           .get();
       if (followerQuerySnapshot.docs.isEmpty) {
-        print('User with username $followerUsername not found');
+        print('User with username $followedUsername not found');
         return;
       }
-      String followerId = followerQuerySnapshot.docs.first.id;
+      String followedId = followerQuerySnapshot.docs.first.id;
 
       // Find the follow relationship in UserFollows collection
       QuerySnapshot querySnapshot = await _userFollowsCollection
