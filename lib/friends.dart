@@ -65,6 +65,8 @@ class _FriendsPageState extends State<FriendsPage> {
   void removeFriend(String name, int index) async {
     UserStepsService userStepsService = UserStepsService();
     await userStepsService.removeFriend(name, UserSession.getUserId()!);
+    _fetchFriendsData();
+
     setState(() {});
   }
 
@@ -73,6 +75,8 @@ class _FriendsPageState extends State<FriendsPage> {
       _controller.clear();
       UserStepsService userStepsService = UserStepsService();
       await userStepsService.addFriend(UserSession.getUserId()!, name);
+      _fetchFriendsData();
+
       setState(() {});
     }
   }
