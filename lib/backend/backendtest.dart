@@ -405,9 +405,8 @@ class UserStepsService {
   }
 
   Future<void> removeFriend(
-      String followerUsername, String followedUsername) async {
-    try {
-      if (followerUsername == followedUsername) return;
+      String followerUsername, String followedId) async {
+
       // Get the userId of the follower by username
       QuerySnapshot followerQuerySnapshot = await _usersCollection
           .where('userName', isEqualTo: followerUsername)
@@ -417,16 +416,6 @@ class UserStepsService {
         return;
       }
       String followerId = followerQuerySnapshot.docs.first.id;
-
-      // Get the userId of the followed user by username
-      QuerySnapshot followedQuerySnapshot = await _usersCollection
-          .where('userName', isEqualTo: followedUsername)
-          .get();
-      if (followedQuerySnapshot.docs.isEmpty) {
-        print('User with username $followedUsername not found');
-        return;
-      }
-      String followedId = followedQuerySnapshot.docs.first.id;
 
       // Find the follow relationship in UserFollows collection
       QuerySnapshot querySnapshot = await _userFollowsCollection
@@ -443,9 +432,7 @@ class UserStepsService {
       await _userFollowsCollection.doc(querySnapshot.docs.first.id).delete();
 
       print('User $followerId successfully unfollowed $followedId');
-    } catch (e) {
-      print('Error removing friend: $e');
-    }
+
   }
 }
 
