@@ -116,7 +116,7 @@ class _AnasayfaState extends State<Anasayfa> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 10, top: 40),
-                    child: createText("%100", 30),
+                    child: createText("%100", 20),
                   )
                 ],
               ),
@@ -141,7 +141,7 @@ class _AnasayfaState extends State<Anasayfa> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             createText("HAFTALIK HEDEF", 18),
-                            createText("$weeklyCount / $weeklyGoal", 25)
+                            createText("$weeklyCount / $weeklyGoal", 18)
                           ],
                         ),
                       )),
@@ -157,7 +157,7 @@ class _AnasayfaState extends State<Anasayfa> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               createText("AYLIK HEDEF", 18),
-                              createText("$monthlyCount / $monthlyGoal", 25)
+                              createText("$monthlyCount / $monthlyGoal", 18)
                             ],
                           ),
                         )))
