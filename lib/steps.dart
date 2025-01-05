@@ -3,6 +3,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 import 'package:walkverse/renkler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'backend/backendtest.dart';
 
 class StepDetailsWidget extends StatefulWidget {
   const StepDetailsWidget({super.key});
@@ -60,7 +61,12 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
 
     for (var doc in querySnapshot.docs) {
       DateTime date = (doc['date'] as Timestamp).toDate();
-      String key = DateFormat('yyyy-MM-dd').format(date); // Use yyyy-MM-dd for sorting
+      String key;
+      if (selectedTimeframe == "Yıl") {
+        key = DateFormat('MMM').format(date); // Monthly data for year
+      } else {
+        key = DateFormat('yyyy-MM-dd').format(date); // Daily data for week and month
+      }
 
       if (stepsMap.containsKey(key)) {
         stepsMap[key] = stepsMap[key]! + (doc['stepAmount'] as int);
@@ -90,14 +96,20 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
         .map((entry) => StepData(entry.key, entry.value))
         .toList();
 
-    // Sort the stepDataList by date
-    stepDataList.sort((a, b) => a.day.compareTo(b.day));
+    // Sort the stepDataList by date or month
+    if (selectedTimeframe == "Yıl") {
+      stepDataList.sort((a, b) => DateFormat('MMM').parse(a.day).compareTo(DateFormat('MMM').parse(b.day)));
+    } else {
+      stepDataList.sort((a, b) => a.day.compareTo(b.day));
+    }
 
-    // Convert date format for display
-    stepDataList = stepDataList.map((data) {
-      String displayDate = DateFormat('d MMM').format(DateFormat('yyyy-MM-dd').parse(data.day));
-      return StepData(displayDate, data.steps);
-    }).toList();
+    // Convert date format for display if not yearly
+    if (selectedTimeframe != "Yıl") {
+      stepDataList = stepDataList.map((data) {
+        String displayDate = DateFormat('d MMM').format(DateFormat('yyyy-MM-dd').parse(data.day));
+        return StepData(displayDate, data.steps);
+      }).toList();
+    }
 
     return stepDataList;
   }
