@@ -21,6 +21,7 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   Future<void> _fetchFriendsData() async {
+    friends = [];
     String? userId = UserSession.getUserId();
     if (userId != null) {
       UserStepsService userStepsService = UserStepsService();
@@ -46,10 +47,10 @@ class _FriendsPageState extends State<FriendsPage> {
           'name': userName,
           'level': level,
           'avatar': AvatarItem(
-            glassesId: (1 + (followedUserIds.indexOf(followedUserId) % 2)),
-            headId: (1 + (followedUserIds.indexOf(followedUserId) % 2)),
-            hairId: (1 + (followedUserIds.indexOf(followedUserId) % 2)),
-            outfitId: (1 + (followedUserIds.indexOf(followedUserId) % 2)),
+            glassesId: (1 ),
+            headId: (1 ),
+            hairId: (1 ),
+            outfitId: (1 ),
           ),
         };
 
