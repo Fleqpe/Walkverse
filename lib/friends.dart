@@ -24,7 +24,6 @@ class _FriendsPageState extends State<FriendsPage> {
     String? userId = UserSession.getUserId();
     if (userId != null) {
       UserStepsService userStepsService = UserStepsService();
-      XpSystem xpSystem = XpSystem();
 
       // Get followed users
       List<String> followedUserIds =
@@ -63,7 +62,10 @@ class _FriendsPageState extends State<FriendsPage> {
 
   final TextEditingController _controller = TextEditingController();
 
-  void removeFriend(int index) {
+  void removeFriend(String name,int index) {
+    UserStepsService userStepsService = UserStepsService();
+    userStepsService.removeFriend(name, UserSession.getUserId()!);
+
     setState(() {
       friends.removeAt(index);
     });
@@ -71,6 +73,8 @@ class _FriendsPageState extends State<FriendsPage> {
 
   void addFriend(String name) {
     if (name.isNotEmpty) {
+     UserStepsService userStepsService = UserStepsService();
+      userStepsService.addFriend(UserSession.getUserId()!, name);
       setState(() {});
       _controller.clear();
     }
@@ -91,7 +95,7 @@ class _FriendsPageState extends State<FriendsPage> {
                   name: friend['name']!,
                   level: friend['level']!,
                   avatar: friend['avatar']!,
-                  onDelete: () => removeFriend(index),
+                  onDelete: () => removeFriend(friend['name'],index),
                 );
               },
             ),

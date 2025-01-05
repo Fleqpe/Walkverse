@@ -342,6 +342,65 @@ class UserStepsService {
     }
     }
   
+  Future<void> addFriend(String followerId, String followedUsername) async {
+    try {
+      // Get the userId of the followed user by username
+      QuerySnapshot querySnapshot = await _usersCollection.where('userName', isEqualTo: followedUsername).get();
+      if (querySnapshot.docs.isEmpty) {
+        print('User with username $followedUsername not found');
+        return;
+      }
+      String followedId = querySnapshot.docs.first.id;
+
+      // Add the follow relationship to UserFollows collection
+      await _userFollowsCollection.add({
+        'follower': followerId,
+        'followed': followedId,
+      });
+
+      print('User $followerId successfully followed $followedId');
+    } catch (e) {
+      print('Error adding friend: $e');
+    }
+  }
+
+Future<void> removeFriend(String followerUsername, String followedUsername) async {
+  try {
+    // Get the userId of the follower by username
+    QuerySnapshot followerQuerySnapshot = await _usersCollection.where('userName', isEqualTo: followerUsername).get();
+    if (followerQuerySnapshot.docs.isEmpty) {
+      print('User with username $followerUsername not found');
+      return;
+    }
+    String followerId = followerQuerySnapshot.docs.first.id;
+
+    // Get the userId of the followed user by username
+    QuerySnapshot followedQuerySnapshot = await _usersCollection.where('userName', isEqualTo: followedUsername).get();
+    if (followedQuerySnapshot.docs.isEmpty) {
+      print('User with username $followedUsername not found');
+      return;
+    }
+    String followedId = followedQuerySnapshot.docs.first.id;
+
+    // Find the follow relationship in UserFollows collection
+    QuerySnapshot querySnapshot = await _userFollowsCollection
+        .where('follower', isEqualTo: followerId)
+        .where('followed', isEqualTo: followedId)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      print('Follow relationship not found');
+      return;
+    }
+
+    // Remove the follow relationship
+    await _userFollowsCollection.doc(querySnapshot.docs.first.id).delete();
+
+    print('User $followerId successfully unfollowed $followedId');
+  } catch (e) {
+    print('Error removing friend: $e');
+  }
+}
 }
 
 class UserSession {
