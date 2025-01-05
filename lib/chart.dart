@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/renkler.dart';
+import 'backend/backendtest.dart';
 
 class ChartWidget extends StatefulWidget {
   const ChartWidget({super.key});
@@ -12,69 +14,108 @@ class ChartWidget extends StatefulWidget {
 }
 
 class _ChartWidgetState extends State<ChartWidget> {
+  List<StepData> chartData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchChartData();
+  }
+
+  Future<void> _fetchChartData() async {
+    String? userId = UserSession.getUserId();
+    if (userId != null) {
+      UserStepsService userStepsService = UserStepsService();
+      DateTime now = DateTime.now();
+      DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+      List<StepData> fetchedData = await getWeeklyStepData(userId, startOfWeek, now);
+      setState(() {
+        chartData = fetchedData;
+      });
+    }
+  }
+
+  Future<List<StepData>> getWeeklyStepData(String userId, DateTime start, DateTime end) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('UserSteps')
+        .where('userId', isEqualTo: userId)
+        .where('date', isGreaterThanOrEqualTo: start)
+        .where('date', isLessThanOrEqualTo: end)
+        .get();
+
+    Map<String, int> stepsMap = {};
+
+    for (var doc in querySnapshot.docs) {
+      DateTime date = (doc['date'] as Timestamp).toDate();
+      String key = DateFormat('yyyy-MM-dd').format(date);
+
+      if (stepsMap.containsKey(key)) {
+        stepsMap[key] = stepsMap[key]! + (doc['stepAmount'] as int);
+      } else {
+        stepsMap[key] = (doc['stepAmount'] as int);
+      }
+    }
+
+    // Fill in missing days with 0 steps
+    for (DateTime date = start; date.isBefore(end) || date.isAtSameMomentAs(end); date = date.add(Duration(days: 1))) {
+      String day = DateFormat('yyyy-MM-dd').format(date);
+      if (!stepsMap.containsKey(day)) {
+        stepsMap[day] = 0;
+      }
+    }
+
+    List<StepData> stepDataList = stepsMap.entries
+        .map((entry) => StepData(entry.key, entry.value))
+        .toList();
+
+    // Sort the stepDataList by date
+    stepDataList.sort((a, b) => a.day.compareTo(b.day));
+
+    // Convert date format for display
+    stepDataList = stepDataList.map((data) {
+      String displayDate = DateFormat('d MMM').format(DateFormat('yyyy-MM-dd').parse(data.day));
+      return StepData(displayDate, data.steps);
+    }).toList();
+
+    return stepDataList;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final chartData = Provider.of<ChartDataProvider>(context);
-
     return SfCartesianChart(
       primaryXAxis: const CategoryAxis(
         labelStyle: TextStyle(fontFamily: "Poppins"),
         majorGridLines: MajorGridLines(
-          width: 2,
-          dashArray: [10, 10], // Makes the grid lines dashed
-          color: accent2Color, // Sets color of the dashed lines
+          width: 0, // Hides grid lines
         ),
       ),
       primaryYAxis: NumericAxis(
-          numberFormat: NumberFormat('#'),
-          maximum: chartData.getBiggestStepCount() * 1.5,
-          interval: chartData.getBiggestStepCount() / 2,
-          majorGridLines: const MajorGridLines(
-            width: 2,
-            dashArray: [10, 10], // Makes the grid lines dashed
-            color: accent2Color, // Sets color of the dashed lines
-          ),
-          labelStyle: const TextStyle(fontFamily: "Poppins")),
-      series: <LineSeries<StepData, String>>[
-        LineSeries<StepData, String>(
-          color: accent3Color,
-          width: 3,
-          markerSettings: const MarkerSettings(
-              isVisible: true,
-              shape: DataMarkerType.circle,
-              width: 10,
-              height: 10,
-              color: mainColor),
-          dataSource: chartData.dataSource,
-          xValueMapper: (StepData steps, _) => steps.day,
-          yValueMapper: (StepData steps, _) => steps.stepCount,
-        )
+        numberFormat: NumberFormat('#'),
+        majorGridLines: const MajorGridLines(
+          width: 0, // Hides grid lines
+        ),
+      ),
+      series: <CartesianSeries>[
+        ColumnSeries<StepData, String>(
+          dataSource: chartData,
+          xValueMapper: (StepData data, _) => data.day,
+          yValueMapper: (StepData data, _) => data.steps,
+          color: Colors.blue, // Change to your desired color
+        ),
       ],
     );
   }
 }
 
+// StepData class
+class StepData {
+  final String day;
+  final int steps;
+
+  StepData(this.day, this.steps);
+}
+
 class ChartDataProvider with ChangeNotifier {
-  List<StepData> dataSource = [
-    StepData("PZT", 9929),
-    StepData("SAL", 5),
-    StepData("ÇAR", 23),
-    StepData("PER", 36),
-    StepData("CUMA", 100),
-    StepData("CMT", 700),
-    StepData("PZR", 3)
-  ];
-  List<StepData> get data => dataSource;
 
-  double getBiggestStepCount() {
-    return dataSource
-        .map((data) => data.stepCount)
-        .reduce((a, b) => a > b ? a : b)
-        .toDouble();
-  }
 
-  void updateData(List<StepData> newData) {
-    dataSource = newData;
-    notifyListeners();
-  }
 }
