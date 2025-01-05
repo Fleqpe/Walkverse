@@ -46,7 +46,8 @@ class _ProfilePageState extends State<ProfilePage> {
       // Calculate weekly steps
       DateTime now = DateTime.now();
       DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-      weeklyCount = await userStepsService.getTotalStepsScaled(userId, startOfWeek, now);
+      weeklyCount =
+          await userStepsService.getTotalStepsScaled(userId, startOfWeek, now);
 
       setState(() {});
     }
@@ -69,9 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
-      ),
+      backgroundColor: mainColor,
       body: Column(
         children: [
           Center(
@@ -85,7 +84,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 5), // Yüksekliği biraz azaltıyoruz
                 createText("$userName - Lv. $level", 16),
                 const SizedBox(height: 5), // Yüksekliği biraz azaltıyoruz
-                createProgressBar(remainingXp,xpToNextLevel),
+                createProgressBar(remainingXp, xpToNextLevel),
                 const SizedBox(height: 5), // Yüksekliği biraz azaltıyoruz
                 createText("BU HAFTA ATILAN ADIM SAYISI", 20),
                 createText("$weeklyCount", 20),
@@ -96,11 +95,12 @@ class _ProfilePageState extends State<ProfilePage> {
           ProfileOption(
             title: "Avatarını Değiştir",
             onTap: () {
-              changeCurrentWidget(context, const ChangeAvatarPage(), "AVATAR DEĞİŞTİR");
+              changeCurrentWidget(
+                  context, const ChangeAvatarPage(), "AVATAR DEĞİŞTİR");
             },
           ),
           ProfileOption(
-            title:"Arkadaşlarım",
+            title: "Arkadaşlarım",
             onTap: () {
               changeCurrentWidget(context, const FriendsPage(), "ARKADAŞLARIM");
             },
@@ -140,7 +140,8 @@ Widget createProgressBar(int remainingXp, int xpToNextLevel) {
     children: [
       // Outline ve arka plan rengi için Container
       Container(
-        width: 200 * (remainingXp / (xpToNextLevel+1)), // İlerleme çubuğunun genişliği
+        width: 200 *
+            (remainingXp / (xpToNextLevel + 1)), // İlerleme çubuğunun genişliği
         height: 28, // Yükseklik
         decoration: BoxDecoration(
           color: accentColor, // Progress bar'ın iç rengi
@@ -168,4 +169,3 @@ Widget createProgressBar(int remainingXp, int xpToNextLevel) {
     ],
   );
 }
-

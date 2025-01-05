@@ -27,7 +27,8 @@ class _FriendsPageState extends State<FriendsPage> {
       XpSystem xpSystem = XpSystem();
 
       // Get followed users
-      List<String> followedUserIds = await userStepsService.getFollowedUsers(userId);
+      List<String> followedUserIds =
+          await userStepsService.getFollowedUsers(userId);
 
       // Fetch friends data
       for (String followedUserId in followedUserIds) {
@@ -60,30 +61,69 @@ class _FriendsPageState extends State<FriendsPage> {
     }
   }
 
+  final TextEditingController _controller = TextEditingController();
+
   void removeFriend(int index) {
     setState(() {
       friends.removeAt(index);
     });
   }
 
+  void addFriend(String name) {
+    if (name.isNotEmpty) {
+      setState(() {});
+      _controller.clear();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: mainColor,
-        body: ListView.builder(
-          itemCount: friends.length,
-          itemBuilder: (context, index) {
-            final friend = friends[index];
-            return FriendCard(
-              name: friend['name'],
-              level: friend['level'],
-              avatar: friend['avatar'], // Avatar kısmını değiştirebilirsin
-              onDelete: () => removeFriend(index),
-            );
-          },
-        ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: friends.length,
+              itemBuilder: (context, index) {
+                final friend = friends[index];
+                return FriendCard(
+                  name: friend['name']!,
+                  level: friend['level']!,
+                  avatar: friend['avatar']!,
+                  onDelete: () => removeFriend(index),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    style: TextStyle(
+                        color: textColor, fontFamily: font2, fontSize: 12),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelStyle: TextStyle(
+                          color: textColor, fontSize: 12, fontFamily: font2),
+                      labelText: "Arkadaş İsmi",
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                ElevatedButton(
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: accent3Color),
+                  onPressed: () => addFriend(_controller.text),
+                  child: createText("Arkadaş Ekle", 12),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

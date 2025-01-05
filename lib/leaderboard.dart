@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:walkverse/renkler.dart';
 import 'backend/backendtest.dart';
 
 class LeaderboardPage extends StatefulWidget {
@@ -26,15 +27,19 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 
     List<Map<String, dynamic>> leaderboard;
     if (filterType == "Dünya") {
-      leaderboard = await _userStepsService.getLeaderboardByPeriod(_getPeriod(timeFilter));
+      leaderboard = await _userStepsService
+          .getLeaderboardByPeriod(_getPeriod(timeFilter));
     } else if (filterType == "Arkadaşlar") {
-      leaderboard = await _userStepsService.getFollowedLeaderboardByPeriod(userId!, _getPeriod(timeFilter));
+      leaderboard = await _userStepsService.getFollowedLeaderboardByPeriod(
+          userId!, _getPeriod(timeFilter));
     } else {
       leaderboard = [];
     }
 
-    List<String> userIds = leaderboard.map((entry) => entry['userId'] as String).toList();
-    Map<String, String> usernames = await _userStepsService.getUsernames(userIds);
+    List<String> userIds =
+        leaderboard.map((entry) => entry['userId'] as String).toList();
+    Map<String, String> usernames =
+        await _userStepsService.getUsernames(userIds);
 
     setState(() {
       _leaderboard = leaderboard;
@@ -76,9 +81,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Leaderboard'),
-      ),
+      backgroundColor: mainColor,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -90,7 +93,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                   value: filterType,
                   items: [
                     DropdownMenuItem(value: 'Dünya', child: Text('Dünya')),
-                    DropdownMenuItem(value: 'Arkadaşlar', child: Text('Arkadaşlar')),
+                    DropdownMenuItem(
+                        value: 'Arkadaşlar', child: Text('Arkadaşlar')),
                   ],
                   onChanged: _onFilterTypeChanged,
                 ),
@@ -143,7 +147,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                   final isCurrentUser = userId == this.userId;
 
                   return Container(
-                    color: isCurrentUser ? Colors.blue.withOpacity(0.2) : Colors.transparent,
+                    color: isCurrentUser
+                        ? Colors.blue.withOpacity(0.2)
+                        : Colors.transparent,
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
