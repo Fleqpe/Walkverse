@@ -18,7 +18,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final UserStepsService _userStepsService = UserStepsService();
   final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
   String _errorMessage = '';
 
   Widget buildTextField({
@@ -41,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  @override
+    @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: mainColor,
@@ -54,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
               createText("Giriş Yap", 40),
               const SizedBox(height: 40),
               buildTextField(
-                  controller: _usernameController, label: 'Kullanıcı Adı'),
+                  controller: _emailController, label: 'email'),
               const SizedBox(height: 20),
               buildTextField(
                   controller: _passwordController,
@@ -65,15 +67,54 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ElevatedButton(
-                    onPressed: _login,
-                    child: Text('Giriş Yap'),
+                    onPressed: () {
+                        // E-posta boşsa, kullanıcıyı uyar
+                        if (_emailController.text.isEmpty) {
+                          setState(() {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Email cannot be empty.")),
+                        );
+                         });
+                        return;
+                        } else {
+                          // Eğer e-posta girildiyse _login fonksiyonunu çağır
+                          _login();
+                        }
+                      },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: accentColor,
+                      minimumSize: const Size(150, 50),
+                    ),
+                    child: createText("Giriş Yap", 18),
+                    
                   ),
                   ElevatedButton(
-                    onPressed: _register,
-                    child: Text('Kayıt Ol'),
+                    onPressed: () {
+                      navigateTo(context, const RegisterPage(), true);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: accent3Color,
+                      minimumSize: const Size(150, 50),
+                    ),
+                    child: createText("Kayıt Ol", 18),
                   ),
+                  const SizedBox(height: 20),
                 ],
               ),
+              TextButton(
+                onPressed: () {
+                  navigateTo(context, const ForgotPasswordPage(), true);
+                },
+                child: Text(
+                  'Şifremi Unuttum',
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 20,
+                    fontFamily: font2,
+                    decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
               if (_errorMessage.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
@@ -89,46 +130,21 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> _login() async {
-    final email = _usernameController.text;
-    final password = _passwordController.text;
+  void _login() async {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
 
-    User? user = await _userStepsService.loginUser(email, password);
+    User? result = await _authService.loginUser(email, password);
 
-    if (user != null) {
-      UserSession.userId = user.uid;
-      int _totalSteps = await _userStepsService.getTotalSteps(user.uid);
-      UserSession.setUser(user.uid, _totalSteps);
-      // Successful login, navigate to landing page and store user session
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const Landing()),
-      );
-    } else {
-      // Display error message
+    if (result != null) {
+      // Başarılı giriş, ana sayfaya yönlendir
+      navigateTo(context, const Landing(), false);
+    }else {
+      // Kullanıcı varsa ama şifre yanlışsa hata mesajı göster
       setState(() {
-        _errorMessage = 'Invalid username or password';
+      _errorMessage = 'email veya parola hatalı.';
       });
     }
   }
 
-  Future<void> _register() async {
-    final email = _usernameController.text;
-    final password = _passwordController.text;
-
-    User? user = await _userStepsService.registerUser(email, password);
-
-    if (user != null) {
-      // Successful registration, navigate to landing page and store user session
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const Landing()),
-      );
-    } else {
-      // Display error message
-      setState(() {
-        _errorMessage = 'Registration failed';
-      });
-    }
-  }
 }
