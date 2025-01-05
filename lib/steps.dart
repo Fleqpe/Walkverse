@@ -139,7 +139,6 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
                   DropdownMenuItem(value: "Hafta", child: Text("Hafta")),
                   DropdownMenuItem(value: "Ay", child: Text("Ay")),
                   DropdownMenuItem(value: "Yıl", child: Text("Yıl")),
-                  DropdownMenuItem(value: "Özel", child: Text("Özel")),
                 ],
                 onChanged: (String? newValue) {
                   setState(() {
