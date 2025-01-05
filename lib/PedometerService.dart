@@ -20,10 +20,10 @@ class PedometerService {
     await service.configure(
       androidConfiguration: AndroidConfiguration(
         onStart: onStart,
-        isForegroundMode: true, // Ensure foreground mode is enabled
+        isForegroundMode: true,
         autoStart: true,
       ),
-      iosConfiguration: IosConfiguration(), // iOS desteği için boş bırakabilirsiniz
+      iosConfiguration: IosConfiguration(),
     );
 
     // Servisi başlat
@@ -32,7 +32,7 @@ class PedometerService {
   
   Future<void> sendStepsToDatabase(int steps) async {
     try {
-      await _userStepsService.addUserStep("userId", steps, DateTime.now());
+      await _userStepsService.addUserStep(UserSession.getUserId().toString(), steps, DateTime.now());
     //  print("Steps sent to database: $steps");
     } catch (e) {
 //      print("Error sending steps to database: $e");

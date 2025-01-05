@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:walkverse/PedometerService.dart';
 import 'package:walkverse/chart.dart';
 import 'package:walkverse/container.dart';
 import 'package:walkverse/renkler.dart';
@@ -110,13 +111,13 @@ class _AnasayfaState extends State<Anasayfa> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         createText("BUGÜN ATILAN ADIM SAYISI", 20),
-                        createText("10/100", 18),
+                        createText("${PedometerService().stepCount}/1000", 18),
                       ],
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 10, top: 40),
-                    child: createText("%100", 20),
+                    child: createText("%${(PedometerService().stepCount/1000) * 100}", 20),
                   )
                 ],
               ),
