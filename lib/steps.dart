@@ -71,7 +71,7 @@ class _StepDetailsWidgetState extends State<StepDetailsWidget> {
       if (stepsMap.containsKey(key)) {
         stepsMap[key] = stepsMap[key]! + (doc['stepAmount'] as int);
       } else {
-        stepsMap[key] = doc['stepAmount'];
+        stepsMap[key] = (doc['stepAmount'] as int);
       }
     }
 
